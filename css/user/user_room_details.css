@@ -1,0 +1,323 @@
+/* ONLY page-specific styles, relying strictly on site.css for globals (nav, buttons, grid, etc.) */
+
+/* Hero Section (Clean & Premium without clashing with light theme) */
+.page-hero {
+  padding: 130px 0 40px;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  position: relative;
+}
+
+.page-breadcrumb {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 800;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.page-breadcrumb a {
+  color: var(--muted);
+  transition: color 0.2s;
+}
+.page-breadcrumb a:hover {
+  color: var(--brand-2);
+}
+.page-breadcrumb i {
+  font-size: 0.65rem;
+  color: var(--border-color, #cbd5e1);
+}
+
+.page-title {
+  font-family: var(--font-h);
+  font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+
+.room-meta-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  font-weight: 800;
+  color: var(--text-2);
+  font-size: 0.85rem;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
+}
+.chip i {
+  color: var(--brand-2);
+}
+
+/* Layout overrides */
+.page-section {
+  padding: 40px 0 80px;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: 30px;
+  align-items: flex-start;
+}
+
+/* Gallery Engine */
+.room-gallery {
+  border-radius: var(--radius-lg, 16px);
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+.room-gallery__main {
+  width: 100%;
+  height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+.room-gallery__main img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.room-gallery__thumbs {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  background: #f8fafc;
+  overflow-x: auto;
+  border-top: 1px solid #e2e8f0;
+}
+.thumb {
+  width: 90px;
+  height: 65px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  opacity: 0.6;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #fff;
+}
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.thumb.is-active, .thumb:hover {
+  border-color: var(--brand-2);
+  opacity: 1;
+}
+
+/* Content Details */
+.room-content {
+  margin-top: 30px;
+  display: grid;
+  gap: 32px;
+}
+.section-title {
+  font-family: var(--font-h);
+  font-size: 1.25rem;
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+.room-description {
+  color: var(--text-2);
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+/* Features Grid */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.2s;
+}
+.feature-item:hover {
+  border-color: var(--brand-2);
+  background: #fff;
+}
+.feature-item i {
+  color: var(--brand-2);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.feature-item span {
+  color: var(--text);
+  font-weight: 800;
+  display: block;
+  font-size: 0.95rem;
+  margin-bottom: 2px;
+}
+.feature-item small {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* Notes Section */
+.notes {
+  font-size: 0.9rem;
+  color: #854d0e;
+  font-weight: 700;
+  background: #fefce8;
+  border: 1px solid #fef08a;
+  padding: 16px;
+  border-radius: 12px;
+  border-left: 4px solid var(--brand-2);
+}
+
+/* Sidebar & Form Checkout */
+.sidebar {
+  position: sticky;
+  top: 100px;
+}
+.sidebar-card {
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid rgba(226, 232, 240, 0.98);
+  background: #ffffff;
+  box-shadow: 0 15px 40px rgba(15, 23, 42, 0.08);
+  padding: 24px;
+  display: grid;
+  gap: 16px;
+}
+.sidebar-card h3 {
+  font-family: var(--font-h);
+  font-weight: 900;
+  color: var(--text);
+  font-size: 1.1rem;
+}
+.price-big {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: var(--text);
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.price-big span {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #f0fdf4;
+  color: #166534;
+  font-weight: 800;
+  font-size: 0.8rem;
+}
+.badge i {
+  color: #16a34a;
+}
+
+.booking-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 6px;
+}
+.field {
+  display: grid;
+  gap: 6px;
+}
+.field-label {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.field-label i {
+  color: var(--brand-2);
+}
+.field-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 0.95rem;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.field-control input,
+.field-control select {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-weight: 800;
+  color: var(--text);
+  font-size: 0.95rem;
+  width: 100%;
+}
+.field-control:focus-within {
+  border-color: var(--brand-2);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.alert {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 700;
+  text-align: center;
+}
+
+.error-state {
+  padding: 80px 16px;
+  text-align: center;
+  color: var(--muted);
+  font-weight: 800;
+}
+.error-state h2 {
+  font-family: var(--font-h);
+  font-weight: 900;
+  color: var(--text);
+  margin-bottom: 12px;
+  font-size: 1.8rem;
+}
+
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { position: static; }
+  .room-gallery__main { height: 350px; }
+}
+@media (max-width: 768px) {
+  .page-hero { padding: 100px 0 30px; }
+  .page-title { font-size: 1.7rem; }
+  .room-gallery__main { height: 260px; }
+  .features-grid { grid-template-columns: 1fr; }
+}

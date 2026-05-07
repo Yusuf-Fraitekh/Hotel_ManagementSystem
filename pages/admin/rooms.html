@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuickStay Admin — Rooms</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../../css/admin/admin.css"/>
+  <style>
+    .modal-content.wide { max-width: 820px; }
+    .f-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    @media(max-width:700px){ .f-grid { grid-template-columns: 1fr; } }
+    .checkbox-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+    .cb-item { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 8px 14px; border-radius: 8px; border: 2px solid var(--border-color); cursor: pointer; font-weight: 700; font-size: 0.85rem; transition: all 0.2s; }
+    .cb-item:hover { border-color: var(--brand); background: #eff6ff; }
+    .cb-item input { accent-color: var(--brand); width: 16px; height: 16px; cursor: pointer; }
+    /* Image uploader */
+    .img-upload-zone {
+      border: 2px dashed var(--border-color); border-radius: 12px;
+      padding: 24px; text-align: center; cursor: pointer;
+      transition: all 0.2s; background: #f8fafc;
+    }
+    .img-upload-zone:hover { border-color: var(--brand); background: #eff6ff; }
+    .img-upload-zone i { font-size: 2rem; color: var(--text-muted); margin-bottom: 8px; display: block; }
+    .img-upload-zone p { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin: 0; }
+    .img-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; margin-top: 12px; }
+    .img-preview-item { position: relative; border-radius: 10px; overflow: hidden; aspect-ratio: 1; }
+    .img-preview-item img { width: 100%; height: 100%; object-fit: cover; }
+    .img-preview-item .remove-img { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; background: rgba(239,68,68,0.9); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 11px; }
+    .room-card-img { height: 160px; width: 100%; object-fit: cover; }
+    .room-card-body { padding: 18px; }
+    .room-card-footer { padding: 12px 18px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 8px; background: #f8fafc; }
+  </style>
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo"><i class="fa-solid fa-bolt-lightning"></i></div>
+      <div class="brand-text">QuickStay</div>
+    </div>
+    <nav class="nav-links">
+      <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+      <a class="nav-item active" href="rooms.html"><i class="fa-solid fa-bed"></i> Rooms</a>
+      <a class="nav-item" href="bookings.html"><i class="fa-solid fa-calendar-check"></i> Bookings</a>
+      <a class="nav-item" href="guests.html"><i class="fa-solid fa-users"></i> Guests</a>
+      <a class="nav-item" href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a class="nav-item" href="../login-signin-page/authintcate.html" onclick="window.QS_STORAGE && window.QS_STORAGE.remove(window.QS_STORAGE.KEYS.user)">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-title">Rooms Database</div>
+        <div class="topbar-breadcrumb">Manage all rooms — changes sync live to user portal</div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn btn-primary" id="btn-add-room">
+          <i class="fa-solid fa-plus"></i> Add New Room
+        </button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="dashboard-stats" style="margin-bottom:28px;">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;"><i class="fa-solid fa-bed"></i></div>
+        <div class="stat-info"><div class="stat-val" id="rs-total">—</div><div class="stat-label">Total Rooms</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;"><i class="fa-solid fa-door-open"></i></div>
+        <div class="stat-info"><div class="stat-val" id="rs-available">—</div><div class="stat-label">Available Now</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;"><i class="fa-solid fa-lock"></i></div>
+        <div class="stat-info"><div class="stat-val" id="rs-occupied">—</div><div class="stat-label">Currently Booked</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;"><i class="fa-solid fa-percent"></i></div>
+        <div class="stat-info"><div class="stat-val" id="rs-occupancy">—</div><div class="stat-label">Occupancy Rate</div></div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="search-input" placeholder="Search rooms by name or type..."/>
+      </div>
+      <div class="filter-chips" id="type-filters">
+        <div class="type-chip active" data-type="all">All</div>
+        <div class="type-chip" data-type="suite">Suites</div>
+        <div class="type-chip" data-type="room">Rooms</div>
+      </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="rooms-grid" id="rooms-grid"></div>
+    <div class="empty-state" id="empty-state" style="display:none;">
+      <i class="fa-solid fa-bed"></i>
+      <h3>No Rooms Found</h3>
+      <p>Add a room using the button above to get started.</p>
+    </div>
+  </main>
+</div>
+
+<!-- ADD / EDIT MODAL -->
+<div class="modal-overlay" id="form-modal">
+  <div class="modal-content wide">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="form-modal-title">Add New Room</div>
+        <div class="modal-subtitle">Changes will sync immediately to the user portal</div>
+      </div>
+      <button class="icon-btn" data-close="form-modal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <form id="room-form">
+        <div class="f-grid">
+          <div class="form-group">
+            <label>Room Name</label>
+            <input type="text" class="form-control" id="f-name" placeholder="e.g. Luxury Ocean Suite" required/>
+          </div>
+          <div class="form-group">
+            <label>Room Type</label>
+            <select class="form-control" id="f-type">
+              <option value="room">Standard Room</option>
+              <option value="suite">Luxury Suite</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Bed Configuration</label>
+            <select class="form-control" id="f-bed">
+              <option value="single">Single Bed</option>
+              <option value="double">Double Bed</option>
+              <option value="king">King Bed</option>
+              <option value="mixed">Mixed / Multiple</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>View</label>
+            <select class="form-control" id="f-view">
+              <option value="city">City View</option>
+              <option value="sea">Sea View</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Floor</label>
+            <select class="form-control" id="f-floor">
+                <option value="1">Floor 1</option>
+                <option value="2">Floor 2</option>
+                <option value="3">Floor 3</option>
+                <option value="4">Floor 4</option>
+                <option value="5">Floor 5</option>
+                <option value="6">Floor 6</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Max Guests</label>
+            <select class="form-control" id="f-guests">
+                <option value="1">1 Person</option>
+                <option value="2" selected>2 Persons</option>
+                <option value="3">3 Persons</option>
+                <option value="4">4 Persons</option>
+                <option value="5">5 Persons</option>
+                <option value="6">6 Persons (Max)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Price per Night (SAR)</label>
+            <input type="number" class="form-control" id="f-price" min="1" required/>
+          </div>
+
+          <div class="form-group">
+            <label>Stay Category</label>
+            <select class="form-control" id="f-stayType">
+              <option value="flex">Flexible / Vacation</option>
+              <option value="business">Business / Corporate</option>
+              <option value="family">Family Stay</option>
+            </select>
+          </div>
+          <div class="form-group" style="grid-column:1/-1;">
+            <label>Tags</label>
+            <div class="checkbox-group">
+              <label class="cb-item"><input type="checkbox" name="rtags" value="couples"/> Couples</label>
+              <label class="cb-item"><input type="checkbox" name="rtags" value="family"/> Family</label>
+              <label class="cb-item"><input type="checkbox" name="rtags" value="private"/> Private</label>
+              <label class="cb-item"><input type="checkbox" name="rtags" value="business"/> Business</label>
+            </div>
+          </div>
+          <div class="form-group" style="grid-column:1/-1;">
+            <label>Description</label>
+            <textarea class="form-control" id="f-desc" rows="3" placeholder="Room description shown to guests..."></textarea>
+          </div>
+          <div class="form-group" style="grid-column:1/-1;">
+            <label>Room Photos <span style="color:var(--text-muted);font-weight:600;">(Upload from device — multiple allowed)</span></label>
+            <div class="img-upload-zone" id="img-upload-zone" onclick="document.getElementById('f-images').click()">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+              <p>Click to upload photos or drag & drop here</p>
+              <p style="font-size:0.75rem;margin-top:4px;">JPG, PNG, WEBP supported</p>
+            </div>
+            <input type="file" id="f-images" accept="image/*" multiple style="display:none;"/>
+            <div class="img-preview-grid" id="img-preview-grid"></div>
+          </div>
+        </div>
+        <div class="modal-footer" style="margin:-32px -32px -32px;margin-top:24px;">
+          <button type="button" class="btn btn-ghost" data-close="form-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="form-submit-btn">
+            <i class="fa-solid fa-floppy-disk"></i> Save Room
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal-content" style="max-width:420px;">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Delete Room</div>
+        <div class="modal-subtitle">This room will be removed from the user portal immediately.</div>
+      </div>
+      <button class="icon-btn" data-close="delete-modal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <p style="color:var(--text-secondary);font-size:0.95rem;line-height:1.7;">
+        You are about to permanently delete <strong id="delete-room-name" style="color:var(--text-primary);"></strong>.
+        Any existing bookings for this room will remain but the room won't be bookable.
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-close="delete-modal">Cancel</button>
+      <button class="btn btn-danger" id="confirm-delete-btn"><i class="fa-solid fa-trash"></i> Delete Room</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="../../js/shared/storage.js"></script>
+<script src="../../js/shared/api.js"></script>
+<script src="../../js/shared/utils/dates.js"></script>
+<script src="../../js/admin/admin_rooms.js"></script>
+<script src="../../js/admin/admin_rooms_uploader.js"></script>
+</body>
+</html>

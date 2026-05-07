@@ -1,0 +1,15 @@
+C:\Users\youse\Desktop\Hotel_Mangment\src\HotelManagement.Application\bin\Debug\net10.0\HotelManagement.Application.deps.json
+C:\Users\youse\Desktop\Hotel_Mangment\src\HotelManagement.Application\bin\Debug\net10.0\HotelManagement.Application.dll
+C:\Users\youse\Desktop\Hotel_Mangment\src\HotelManagement.Application\bin\Debug\net10.0\HotelManagement.Application.pdb
+C:\Users\youse\Desktop\Hotel_Mangment\src\HotelManagement.Application\bin\Debug\net10.0\HotelManagement.Domain.dll
+C:\Users\youse\Desktop\Hotel_Mangment\src\HotelManagement.Application\bin\Debug\net10.0\HotelManagement.Domain.pdb
+C:\Users\youse\Desktop\Hotel_Mangment\src\HotelManagement.Application\obj\Debug\net10.0\HotelManagement.Application.csproj.AssemblyReference.cache
+C:\Users\youse\Desktop\Hotel_Mangment\src\HotelManagement.Application\obj\Debug\net10.0\HotelManagement.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\youse\Desktop\Hotel_Mangment\src\HotelManagement.Application\obj\Debug\net10.0\HotelManagement.Application.AssemblyInfoInputs.cache
+C:\Users\youse\Desktop\Hotel_Mangment\src\HotelManagement.Application\obj\Debug\net10.0\HotelManagement.Application.AssemblyInfo.cs
+C:\Users\youse\Desktop\Hotel_Mangment\src\HotelManagement.Application\obj\Debug\net10.0\HotelManagement.Application.csproj.CoreCompileInputs.cache
+C:\Users\youse\Desktop\Hotel_Mangment\src\HotelManagement.Application\obj\Debug\net10.0\HotelMan.6B58BC18.Up2Date
+C:\Users\youse\Desktop\Hotel_Mangment\src\HotelManagement.Application\obj\Debug\net10.0\HotelManagement.Application.dll
+C:\Users\youse\Desktop\Hotel_Mangment\src\HotelManagement.Application\obj\Debug\net10.0\refint\HotelManagement.Application.dll
+C:\Users\youse\Desktop\Hotel_Mangment\src\HotelManagement.Application\obj\Debug\net10.0\HotelManagement.Application.pdb
+C:\Users\youse\Desktop\Hotel_Mangment\src\HotelManagement.Application\obj\Debug\net10.0\ref\HotelManagement.Application.dll

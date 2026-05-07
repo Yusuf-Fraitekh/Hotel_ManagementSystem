@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuickStay Hotel | Home</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../../css/user/site.css" />
+</head>
+
+<body>
+  <header class="header" id="siteHeader">
+    <div class="container">
+      <nav class="nav" aria-label="Main Navigation">
+        <a class="brand" href="index.html">
+          <span class="brand__logo"><i class="fa-solid fa-house-chimney"></i></span>
+          QuickStay
+        </a>
+
+        <div class="nav__menu">
+          <a href="index.html">Home</a>
+          <a href="rooms.html">Rooms</a>
+          <a href="bookings.html" id="navBookings" style="display:none;">My Bookings</a>
+        </div>
+
+        <div class="nav__actions" id="authArea">
+          </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container">
+        <div class="hero__grid">
+          <div>
+            <div class="hero__badge">
+              <i class="fa-solid fa-award"></i>
+              Premium Hospitality Standards
+            </div>
+            <h1 class="hero__title">Book Your Stay Easily<br>Choose the Perfect Room</h1>
+            <p class="hero__lead">
+              Save your core booking details here, then explore our rooms to find the best match for your view, guests, and type preferences.
+            </p>
+
+            <div class="btn-row">
+              <a class="btn btn-primary" href="rooms.html"><i class="fa-solid fa-bed"></i> Browse All Rooms</a>
+              <a class="btn btn-ghost" href="#categories"><i class="fa-solid fa-layer-group"></i> Room Categories</a>
+            </div>
+
+            <div class="trust">
+              <span><i class="fa-solid fa-wifi"></i> Fast Wi-Fi</span>
+              <span><i class="fa-solid fa-shield-heart"></i> High Hygiene</span>
+              <span><i class="fa-solid fa-clock"></i> 24/7 Reception</span>
+            </div>
+          </div>
+
+          <aside class="booking" aria-label="Quick Booking">
+            <div class="booking__head">
+              <h3>Quick Booking</h3>
+              <div class="hint"><i class="fa-solid fa-floppy-disk"></i> Save & Browse Rooms</div>
+            </div>
+
+            <form class="booking__body" id="bookingForm">
+              <!-- Dates -->
+              <div class="booking__grid">
+                <div class="field">
+                  <div class="label"><i class="fa-regular fa-calendar-check"></i> Check-in</div>
+                  <div class="control">
+                    <input type="date" id="checkin" required />
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="label"><i class="fa-regular fa-calendar-xmark"></i> Check-out</div>
+                  <div class="control">
+                    <input type="date" id="checkout" required />
+                  </div>
+                </div>
+              </div>
+
+              <!-- Main Requirements -->
+              <div class="booking__grid">
+                <div class="field">
+                  <div class="label"><i class="fa-solid fa-user-group"></i> Guests</div>
+                  <div class="control">
+                    <select id="guests" required>
+                      <option value="1">1 Guest</option>
+                      <option value="2" selected>2 Guests</option>
+                      <option value="3">3 Guests</option>
+                      <option value="4">4 Guests</option>
+                      <option value="5">5+ Guests</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="label"><i class="fa-solid fa-bed"></i> Room Type</div>
+                  <div class="control">
+                    <select id="roomType" name="type">
+                      <option value="">Any Type</option>
+                      <option value="room">Rooms</option>
+                      <option value="suite">Suites</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Core Features -->
+              <div class="booking__grid">
+                <div class="field">
+                  <div class="label"><i class="fa-solid fa-moon"></i> Bed Type</div>
+                  <div class="control">
+                    <select id="bedType" name="bed">
+                      <option value="">Any Bed</option>
+                      <option value="single">Single Bed</option>
+                      <option value="double">Double Bed</option>
+                      <option value="king">King Bed</option>
+                      <option value="mixed">Mixed (Family)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="label"><i class="fa-solid fa-eye"></i> View</div>
+                  <div class="control">
+                    <select id="viewType" name="view">
+                      <option value="">Any View</option>
+                      <option value="sea">Sea View</option>
+                      <option value="city">City View</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Preferences -->
+              <div class="booking__grid">
+                <div class="field">
+                  <div class="label"><i class="fa-solid fa-star"></i> Experience</div>
+                  <div class="control">
+                    <select id="experienceTag" name="tag">
+                      <option value="">Any Experience</option>
+                      <option value="couples">Couples</option>
+                      <option value="private">Private</option>
+                      <option value="luxury">Luxury</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="label"><i class="fa-solid fa-building"></i> Floor</div>
+                  <div class="control">
+                    <select id="floor" required>
+                      <option value="" selected>Any Floor</option>
+                      <option value="1">1st Floor</option>
+                      <option value="2">2nd Floor</option>
+                      <option value="3">3rd Floor</option>
+                      <option value="4">4th Floor</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="field">
+                <div class="label"><i class="fa-solid fa-layer-group"></i> Stay Type</div>
+                <div class="control">
+                  <select id="stayType" required>
+                    <option value="" selected>Any Category</option>
+                    <option value="flex">Flexible Stay</option>
+                    <option value="business">Business Trip</option>
+                    <option value="family">Family Vacation</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="btn btn-primary" type="submit" style="width:100%;">
+                 Save and Choose Room <i class="fa-solid fa-arrow-right"></i>
+              </button>
+
+              <div class="micro">
+                <span><i class="fa-solid fa-check"></i> No payment now</span>
+                <span><i class="fa-solid fa-clock"></i> Modify dates later</span>
+              </div>
+            </form>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="categories">
+      <div class="container">
+        <div class="section__head">
+          <div>
+            <div class="title">Room Categories</div>
+            <div class="subtitle">
+              Browse all available room types — click any category to instantly filter results.
+            </div>
+          </div>
+          <a class="btn btn-ghost" href="rooms.html"><i class="fa-solid fa-sliders"></i> View All Rooms</a>
+        </div>
+
+        <div class="grid">
+
+          <a class="card" href="rooms.html?type=room&bed=single" aria-label="Single Rooms">
+            <div class="card__media">
+              <span class="tag"><i class="fa-solid fa-user"></i> Solo</span>
+              <img src="https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1600&q=80" alt="Single Room" loading="lazy">
+            </div>
+            <div class="card__body">
+              <div class="card__title">Single Rooms</div>
+              <div class="card__text">Perfect for solo travelers — practical, comfortable, and affordable.</div>
+            </div>
+            <div class="card__foot">
+              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
+              <span class="muted" style="font-weight:900;">1 Guest</span>
+            </div>
+          </a>
+
+          <a class="card" href="rooms.html?type=room&bed=double" aria-label="Double Rooms">
+            <div class="card__media">
+              <span class="tag"><i class="fa-solid fa-user-group"></i> Double</span>
+              <img src="https://images.unsplash.com/photo-1551887373-6d7f8bfc4f84?auto=format&fit=crop&w=1600&q=80" alt="Double Room" loading="lazy">
+            </div>
+            <div class="card__body">
+              <div class="card__title">Double Rooms</div>
+              <div class="card__text">Ideal for two — double bed or twin setup for friends and couples.</div>
+            </div>
+            <div class="card__foot">
+              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
+              <span class="muted" style="font-weight:900;">2 Guests</span>
+            </div>
+          </a>
+
+          <a class="card" href="rooms.html?tag=couples&guests=2" aria-label="Couples Rooms">
+            <div class="card__media">
+              <span class="tag"><i class="fa-solid fa-heart"></i> Couples</span>
+              <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=80" alt="Couples Room" loading="lazy">
+            </div>
+            <div class="card__body">
+              <div class="card__title">Rooms for Couples</div>
+              <div class="card__text">Romantic and quiet rooms handpicked for couples seeking comfort.</div>
+            </div>
+            <div class="card__foot">
+              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
+              <span class="muted" style="font-weight:900;">Romantic</span>
+            </div>
+          </a>
+
+          <a class="card" href="rooms.html?view=sea" aria-label="Sea View Rooms">
+            <div class="card__media">
+              <span class="tag"><i class="fa-solid fa-water"></i> Sea View</span>
+              <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1600&q=80" alt="Sea View" loading="lazy">
+            </div>
+            <div class="card__body">
+              <div class="card__title">Sea View Rooms</div>
+              <div class="card__text">Wake up to a breathtaking ocean horizon every morning.</div>
+            </div>
+            <div class="card__foot">
+              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
+              <span class="muted" style="font-weight:900;">Sea View</span>
+            </div>
+          </a>
+
+          <a class="card" href="rooms.html?view=city" aria-label="City View Rooms">
+            <div class="card__media">
+              <span class="tag"><i class="fa-solid fa-city"></i> City View</span>
+              <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1600&q=80" alt="City View" loading="lazy">
+            </div>
+            <div class="card__body">
+              <div class="card__title">City View Rooms</div>
+              <div class="card__text">Overlook the city skyline with stunning panoramic windows.</div>
+            </div>
+            <div class="card__foot">
+              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
+              <span class="muted" style="font-weight:900;">City View</span>
+            </div>
+          </a>
+
+          <a class="card" href="rooms.html?type=room&tag=business&stayType=business" aria-label="Business Rooms">
+            <div class="card__media">
+              <span class="tag"><i class="fa-solid fa-briefcase"></i> Business</span>
+              <img src="https://images.unsplash.com/photo-1582719371805-1c00da5819e8?auto=format&fit=crop&w=1600&q=80" alt="Business Room" loading="lazy">
+            </div>
+            <div class="card__body">
+              <div class="card__title">Business Rooms</div>
+              <div class="card__text">Ergonomic workspace and fast internet for productive stays.</div>
+            </div>
+            <div class="card__foot">
+              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
+              <span class="muted" style="font-weight:900;">Work</span>
+            </div>
+          </a>
+
+          <a class="card" href="rooms.html?type=suite&tag=private" aria-label="Private Suites">
+            <div class="card__media">
+              <span class="tag"><i class="fa-solid fa-crown"></i> Private</span>
+              <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1600&q=80" alt="Private Suite" loading="lazy">
+            </div>
+            <div class="card__body">
+              <div class="card__title">Private Suites</div>
+              <div class="card__text">Maximum privacy with a separate living area and premium touches.</div>
+            </div>
+            <div class="card__foot">
+              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
+              <span class="muted" style="font-weight:900;">Suite</span>
+            </div>
+          </a>
+
+          <a class="card" href="rooms.html?tag=family&stayType=family&guests=3" aria-label="Family Rooms">
+            <div class="card__media">
+              <span class="tag"><i class="fa-solid fa-people-roof"></i> Family</span>
+              <img src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1600&q=80" alt="Family Room" loading="lazy">
+            </div>
+            <div class="card__body">
+              <div class="card__title">Family Rooms & Suites</div>
+              <div class="card__text">Spacious layouts with multiple beds — perfect for the whole family.</div>
+            </div>
+            <div class="card__foot">
+              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
+              <span class="muted" style="font-weight:900;">3+ Guests</span>
+            </div>
+          </a>
+
+          <a class="card" href="rooms.html?type=suite" aria-label="All Suites">
+            <div class="card__media">
+              <span class="tag"><i class="fa-solid fa-star"></i> Luxury</span>
+              <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1600&q=80" alt="Luxury Suites" loading="lazy">
+            </div>
+            <div class="card__body">
+              <div class="card__title">Luxury Suites</div>
+              <div class="card__text">Our finest suites with top-tier services and premium comfort.</div>
+            </div>
+            <div class="card__foot">
+              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
+              <span class="muted" style="font-weight:900;">Premium</span>
+            </div>
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+    <footer id="footer">
+      <div class="container">
+        <div class="footbottom">
+          <div>&copy; 2026 QuickStay Hotel. All rights reserved.</div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script src="../../js/shared/storage.js" defer></script>
+  <script src="../../js/shared/api.js" defer></script>
+  <script src="../../js/shared/dom.js" defer></script>
+  <script src="../../js/shared/utils/dates.js" defer></script>
+  <script src="../../js/shared/ui/header.js" defer></script>
+  <script src="../../js/shared/ui/user_nav.js" defer></script>
+  <script src="../../js/user/user_home.js" defer></script>
+</body>
+</html>

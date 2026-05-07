@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Room Details | QuickStay</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../../css/user/site.css" />
+  <link rel="stylesheet" href="../../css/user/user_room_details.css" />
+</head>
+<body>
+<header class="header" id="siteHeader">
+    <div class="container">
+      <nav class="nav" aria-label="Main Navigation">
+        <a class="brand" href="index.html">
+          <span class="brand__logo"><i class="fa-solid fa-house-chimney"></i></span>
+          QuickStay
+        </a>
+
+        <div class="nav__menu">
+          <a href="index.html">Home</a>
+          <a href="rooms.html">Rooms</a>
+          <a href="bookings.html" id="navBookings" style="display:none;">My Bookings</a>
+        </div>
+
+        <div class="nav__actions" id="authArea">
+          </div>
+      </nav>
+    </div>
+  </header>
+
+<main id="mainContent">
+  </main>
+
+<footer>
+  <div class="container">
+    <div class="footbottom">
+      <div>&copy; 2026 QuickStay Hotel. All rights reserved.</div>
+      <div class="muted" style="font-weight:900;">This is a room details page with local booking storage (LocalStorage).</div>
+    </div>
+  </div>
+</footer>
+  <script src="../../js/shared/storage.js" defer></script>
+  <script src="../../js/shared/api.js" defer></script>
+  <script src="../../js/shared/dom.js" defer></script>
+  <script src="../../js/shared/utils/dates.js" defer></script>
+  <script src="../../js/shared/ui/header.js" defer></script>
+  <script src="../../js/shared/ui/user_nav.js" defer></script>
+  <script src="../../js/user/user_room_details.js" defer></script>
+</body>
+</html>

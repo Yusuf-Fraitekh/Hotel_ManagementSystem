@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile | QuickStay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+    <link rel="stylesheet" href="../../css/user/site.css" />
+    <link rel="stylesheet" href="../../css/user/account.css" />
+
+  <style>
+    /* Lock the header and fix layout overlapping */
+    .header {
+      position: sticky !important;
+      top: 0;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      border-bottom: 1px solid var(--border-color);
+      z-index: 100 !important;
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="header" id="siteHeader">
+  <div class="container">
+    <nav class="nav" aria-label="Main Navigation">
+      <a class="brand" href="index.html">
+        <span class="brand__logo"><i class="fa-solid fa-house-chimney"></i></span>
+        QuickStay
+      </a>
+
+      <div class="nav__menu">
+        <a href="index.html">Home</a>
+        <a href="rooms.html">Rooms</a>
+        <a href="bookings.html" id="navBookings" style="display:none;">My Bookings</a>
+      </div>
+
+      <div class="nav__actions" id="authArea">
+        </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="page-hero">
+    <div class="container">
+      <h1 class="page-title">User Profile</h1>
+      <p class="page-subtitle">Manage your account information and view your local stats.</p>
+    </div>
+  </section>
+
+  <section class="page-section">
+    <div class="container">
+      <div style="display:flex; flex-direction:column; gap:24px; max-width:800px; margin: 0 auto;">
+        <article class="card" style="padding: 32px;">
+            <div class="profile-header">
+                <div class="avatar-lg" id="avatarInitials">U</div>
+                <div class="profile-header__text">
+                    <h2 id="displayName">Guest</h2>
+                    <span id="displaySubtitle">Not logged in yet</span>
+                </div>
+            </div>
+
+            <div class="profile-list">
+                <span>
+                    <span>Name</span>
+                    <strong id="infoName">Not Available</strong>
+                </span>
+                <span>
+                    <span>Email</span>
+                    <strong id="infoEmail">Not Available</strong>
+                </span>
+            </div>
+
+            <form class="form" id="accountForm">
+                <div class="field">
+                    <label class="field-label"><i class="fa-solid fa-user"></i> Full Name</label>
+                    <div class="field-control">
+                        <input type="text" id="inputName" placeholder="Type your full name">
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="field-label"><i class="fa-solid fa-envelope"></i> Email Address</label>
+                    <div class="field-control">
+                        <input type="email" id="inputEmail" placeholder="example@mail.com" readonly style="opacity: 0.6; cursor: not-allowed; background: #f8fafc;" title="Email cannot be changed">
+                    </div>
+                </div>
+
+                <div class="message" id="formMessage"></div>
+
+                <div class="form-actions" style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--border-color); display: flex; gap: 12px; justify-content: space-between;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Profile
+                    </button>
+                    <button type="button" class="btn btn-ghost" id="logoutBtn" onclick="window.QS_STORAGE.remove(window.QS_STORAGE.KEYS.user); window.location.href='index.html';" style="flex:1;">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout Safely
+                    </button>
+                </div>
+            </form>
+        </article>
+
+        <div class="account-bottom-section">
+            <div class="sidebar-card">
+                <h3>Quick Look at Bookings</h3>
+                <p class="muted">Stats are generated from your local bookings.</p>
+                <div class="stats" id="statsBox"></div>
+                <div id="bookingsPreview"></div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="sidebar-card" style="margin-top:24px; background:linear-gradient(to bottom right, #fff1f2, #ffe4e6); border: 1px solid #fda4af; border-radius: 16px; box-shadow: 0 10px 25px rgba(225,29,72,0.1);">
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                  <div style="width:40px; height:40px; border-radius:50%; background:#ffe4e6; color:#e11d48; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">
+                    <i class="fa-solid fa-skull-crossbones"></i>
+                  </div>
+                  <div>
+                    <h3 style="color:#e11d48; margin:0; font-size:1.1rem; line-height:1;">Danger Zone</h3>
+                  </div>
+                </div>
+                <p style="font-size:0.9rem; color:#9f1239; font-weight:600; line-height:1.5; margin-bottom:16px;">
+                  Caution: Erasing data will permanently wipe your local account details and settings from this browser. This action cannot be reversed.
+                </p>
+                <button type="button" class="btn btn-primary" id="clearDataBtn" onclick="window.QS_STORAGE.remove(window.QS_STORAGE.KEYS.user); window.QS_STORAGE.remove(window.QS_STORAGE.KEYS.bookings); window.location.href='index.html';" style="width:100%; background:#e11d48; border-color:#be123c; padding:12px; border-radius:10px; font-weight:800; box-shadow: 0 4px 14px rgba(225,29,72,0.3);">
+                    <i class="fa-solid fa-fire"></i> Erase Everything
+                </button>
+            </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footbottom">
+        <div>&copy; 2026 QuickStay Hotel. All rights reserved.</div>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<script src="../../js/shared/storage.js" defer></script>
+<script src="../../js/shared/api.js" defer></script>
+<script src="../../js/shared/dom.js" defer></script>
+<script src="../../js/shared/utils/dates.js" defer></script>
+<script src="../../js/shared/ui/header.js" defer></script>
+<script src="../../js/shared/ui/user_nav.js" defer></script>
+<script src="../../js/user/account.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login / Sign Up | QuickStay</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/user/site.css" />
+  <link rel="stylesheet" href="../../css/user/auth.css" />
+</head>
+<body>
+  <div class="auth-shell">
+    <div class="container">
+      <div class="form-box login">
+        <form id="loginForm">
+          <h1>Sign In</h1>
+          <p>Enter your details to continue</p>
+
+          <div class="input-box">
+            <input type="email" id="loginEmail" placeholder="Email Address" required>
+            <i class='bx bxs-envelope'></i>
+          </div>
+          <div class="input-box">
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <i class='bx bxs-lock-alt'></i>
+            <i class='bx bxs-show password-toggle-icon' data-target="loginPassword"></i>
+          </div>
+
+          <div class="forgot-link">
+            <a href="#">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn">
+            <i class="fa-solid fa-right-to-bracket"></i> Login
+          </button>
+
+          <div id="loginMessage" class="message"></div>
+
+        </form>
+      </div>
+
+      <div class="form-box register">
+        <form id="registerForm">
+          <h1>Create Account</h1>
+          <p>Sign up with your basic info</p>
+
+          <div class="input-box">
+            <input type="text" id="registerUsername" placeholder="Full Name" required>
+            <i class='bx bxs-user'></i>
+          </div>
+          <div class="input-box">
+            <input type="email" id="registerEmail" placeholder="Email Address" required>
+            <i class='bx bxs-envelope'></i>
+          </div>
+          <div class="input-box">
+            <input type="password" id="registerPassword" placeholder="Password" required>
+            <i class='bx bxs-lock-alt'></i>
+            <i class='bx bxs-show password-toggle-icon' data-target="registerPassword"></i>
+          </div>
+
+          <button type="submit" class="btn">
+            <i class="fa-solid fa-user-plus"></i> Register
+          </button>
+
+          <div id="registerMessage" class="message"></div>
+
+        </form>
+      </div>
+
+      <div class="toggle-box">
+        <div class="toggle-panel toggle-left">
+          <h1>Welcome Back!</h1>
+          <p>To keep connected with us please login with your personal info</p>
+          <button type="button" class="btn register-btn">Sign Up</button>
+        </div>
+
+        <div class="toggle-panel toggle-right">
+          <h1>Hello, Friend!</h1>
+          <p>Enter your personal details and start your journey with us</p>
+          <button type="button" class="btn login-btn">Sign In</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../../js/shared/storage.js" defer></script>
+  <script src="../../js/shared/api.js" defer></script>
+  <script src="../../js/shared/dom.js" defer></script>
+  <script src="../../js/user/auth.js" defer></script>
+</body>
+</html>
+

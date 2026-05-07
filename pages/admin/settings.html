@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuickStay Admin — Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../../css/admin/admin.css"/>
+  <style>
+    .settings-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media(max-width:900px){ .settings-layout { grid-template-columns: 1fr; } }
+    .settings-card { background: var(--bg-card); border-radius: 16px; box-shadow: var(--shadow-md); border: 1px solid var(--border-color); overflow: hidden; }
+    .settings-card-header { padding: 18px 24px; border-bottom: 1px solid var(--border-color); background: #f8fafc; display: flex; align-items: center; gap: 10px; }
+    .settings-card-header i { color: var(--brand); font-size: 1.1rem; }
+    .settings-card-title { font-size: 1rem; font-weight: 800; color: var(--text-primary); }
+    .settings-card-body { padding: 24px; display: flex; flex-direction: column; gap: 0; }
+    .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #f1f5f9; }
+    .settings-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .s-label { font-weight: 700; font-size: 0.9rem; color: var(--text-primary); }
+    .s-val { font-size: 1.1rem; font-weight: 900; color: var(--brand); }
+    .danger-card { border: 2px solid #fecaca; }
+    .danger-card .settings-card-header { background: #fef2f2; }
+    .danger-card .settings-card-header i { color: #ef4444; }
+    .danger-card .settings-card-title { color: #991b1b; }
+    .db-stat { background: #f8fafc; border-radius: 10px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border-color); margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo"><i class="fa-solid fa-bolt-lightning"></i></div>
+      <div class="brand-text">QuickStay</div>
+    </div>
+    <nav class="nav-links">
+      <a class="nav-item" href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+      <a class="nav-item" href="rooms.html"><i class="fa-solid fa-bed"></i> Rooms</a>
+      <a class="nav-item" href="bookings.html"><i class="fa-solid fa-calendar-check"></i> Bookings</a>
+      <a class="nav-item" href="guests.html"><i class="fa-solid fa-users"></i> Guests</a>
+      <a class="nav-item active" href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a class="nav-item" href="../login-signin-page/authintcate.html" onclick="window.QS_STORAGE && window.QS_STORAGE.remove(window.QS_STORAGE.KEYS.user)">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+      </a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-title">System Settings</div>
+        <div class="topbar-breadcrumb">Hotel configuration and database management</div>
+      </div>
+    </div>
+
+    <div class="settings-layout">
+
+      <!-- Hotel Info -->
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <i class="fa-solid fa-hotel"></i>
+          <div class="settings-card-title">Hotel Information</div>
+        </div>
+        <div class="settings-card-body">
+          <div class="form-group">
+            <label>Hotel Name</label>
+            <input type="text" class="form-control" id="hotel-name" placeholder="Hotel name"/>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+            <div class="form-group">
+              <label>City</label>
+              <input type="text" class="form-control" id="hotel-city" placeholder="City"/>
+            </div>
+            <div class="form-group">
+              <label>Country</label>
+              <input type="text" class="form-control" id="hotel-country" placeholder="Country"/>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:20px;">
+            <label>Support Email</label>
+            <input type="email" class="form-control" id="hotel-email" placeholder="support@hotel.com"/>
+          </div>
+          <button class="btn btn-primary" id="save-hotel-btn" style="width:100%;">
+            <i class="fa-solid fa-floppy-disk"></i> Save Information
+          </button>
+          <div id="hotel-msg" style="margin-top:10px;font-weight:700;font-size:0.85rem;display:none;color:#10b981;"></div>
+        </div>
+      </div>
+
+      <!-- Database Overview -->
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <i class="fa-solid fa-database"></i>
+          <div class="settings-card-title">Database Overview (LocalStorage)</div>
+        </div>
+        <div class="settings-card-body" style="padding:24px;">
+          <div class="db-stat">
+            <div class="s-label"><i class="fa-solid fa-bed" style="margin-right:8px;color:var(--brand);"></i>Total Rooms</div>
+            <div class="s-val" id="db-rooms">—</div>
+          </div>
+          <div class="db-stat">
+            <div class="s-label"><i class="fa-solid fa-calendar-check" style="margin-right:8px;color:#10b981;"></i>Total Bookings</div>
+            <div class="s-val" id="db-bookings" style="color:#10b981;">—</div>
+          </div>
+          <div class="db-stat" style="margin-bottom:0;">
+            <div class="s-label"><i class="fa-solid fa-user" style="margin-right:8px;color:#8b5cf6;"></i>Registered User</div>
+            <div class="s-val" id="db-user" style="color:#8b5cf6;font-size:0.95rem;">—</div>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:10px;">
+            <button class="btn btn-ghost" id="refresh-db-btn" style="flex:1;">
+              <i class="fa-solid fa-arrows-rotate"></i> Refresh
+            </button>
+            <a href="rooms.html" class="btn btn-primary" style="flex:1;text-align:center;">
+              <i class="fa-solid fa-bed"></i> Manage Rooms
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Danger Zone — full width -->
+      <div class="settings-card danger-card" style="grid-column:1/-1;">
+        <div class="settings-card-header">
+          <i class="fa-solid fa-skull-crossbones"></i>
+          <div class="settings-card-title">Danger Zone — Irreversible Actions</div>
+        </div>
+        <div class="settings-card-body" style="flex-direction:row;gap:16px;flex-wrap:wrap;padding:24px;">
+          <button class="btn" id="clear-bookings-btn" style="background:#fef2f2;color:#991b1b;border:2px solid #fecaca;font-weight:800;">
+            <i class="fa-solid fa-trash"></i> Wipe All Bookings
+          </button>
+          <button class="btn" id="reset-rooms-btn" style="background:#fef2f2;color:#991b1b;border:2px solid #fecaca;font-weight:800;">
+            <i class="fa-solid fa-rotate-left"></i> Reset Rooms to Default
+          </button>
+          <button class="btn btn-danger" id="clear-all-btn">
+            <i class="fa-solid fa-bomb"></i> Nuke Entire Database
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div id="toast" style="position:fixed;bottom:24px;right:24px;z-index:9999;padding:14px 22px;border-radius:12px;font-size:0.9rem;font-weight:700;display:none;box-shadow:0 10px 25px rgba(0,0,0,0.2);"></div>
+
+<script src="../../js/shared/storage.js"></script>
+<script src="../../js/shared/api.js"></script>
+<script src="../../js/shared/utils/dates.js"></script>
+<script src="../../js/admin/admin_settings.js"></script>
+</body>
+</html>

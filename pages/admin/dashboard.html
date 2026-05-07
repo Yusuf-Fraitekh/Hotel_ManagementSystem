@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuickStay Admin — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../../css/admin/admin.css"/>
+  <style>
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .cal-day-header { text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); padding: 4px 0; }
+    .cal-day { text-align: center; padding: 6px 4px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: default; }
+    .cal-day.today { background: var(--brand); color: #fff; font-weight: 800; }
+    .cal-day.has-booking { background: #fef3c7; color: #92400e; font-weight: 800; }
+    .cal-day.other-month { color: #e2e8f0; }
+    .chart-bars { display: flex; align-items: flex-end; gap: 10px; height: 120px; padding-top: 10px; }
+    .bar-group { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+    .bars { display: flex; gap: 4px; align-items: flex-end; }
+    .bar { width: 14px; border-radius: 4px 4px 0 0; transition: height 0.5s ease; }
+    .bar.room { background: var(--brand); }
+    .bar.service { background: #e2e8f0; }
+    .bar-label { font-size: 0.65rem; font-weight: 700; color: var(--text-muted); }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+    .card { background: var(--bg-card); border-radius: 16px; box-shadow: var(--shadow-md); border: 1px solid rgba(255,255,255,0.8); overflow: hidden; }
+    .card-header { padding: 20px 24px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .card-title { font-size: 1rem; font-weight: 800; color: var(--text-primary); }
+    .card-body { padding: 24px; }
+    .bookings-section { margin-bottom: 32px; }
+    .bookings-section .card-header { background: #f8fafc; }
+  </style>
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo"><i class="fa-solid fa-bolt-lightning"></i></div>
+      <div class="brand-text">QuickStay</div>
+    </div>
+    <nav class="nav-links">
+      <a class="nav-item active" href="dashboard.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+      <a class="nav-item" href="rooms.html"><i class="fa-solid fa-bed"></i> Rooms</a>
+      <a class="nav-item" href="bookings.html"><i class="fa-solid fa-calendar-check"></i> Bookings</a>
+      <a class="nav-item" href="guests.html"><i class="fa-solid fa-users"></i> Guests</a>
+      <a class="nav-item" href="settings.html"><i class="fa-solid fa-gear"></i> Settings</a>
+    </nav>
+    <div class="sidebar-bottom">
+      <a class="nav-item" href="../login-signin-page/authintcate.html" onclick="window.QS_STORAGE && window.QS_STORAGE.remove(window.QS_STORAGE.KEYS.user)"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+    </div>
+  </aside>
+
+  <main class="main-content">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="topbar-title">Dashboard Overview</div>
+        <div class="topbar-breadcrumb">Live data from LocalStorage</div>
+      </div>
+      <div class="topbar-right" style="display:flex;gap:12px;">
+        <div style="background:#f1f5f9;padding:10px 16px;border-radius:10px;font-size:0.85rem;font-weight:700;color:var(--text-secondary);">
+          <i class="fa-regular fa-clock"></i> <span id="live-time">—</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="dashboard-stats">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;"><i class="fa-solid fa-sack-dollar"></i></div>
+        <div class="stat-info"><div class="stat-val" id="stat-revenue">0</div><div class="stat-label">Total Revenue (SAR)</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:linear-gradient(135deg,#10b981,#059669);color:#fff;"><i class="fa-solid fa-calendar-check"></i></div>
+        <div class="stat-info"><div class="stat-val" id="stat-bookings">0</div><div class="stat-label">Total Bookings</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;"><i class="fa-solid fa-bed"></i></div>
+        <div class="stat-info"><div class="stat-val" id="stat-occupancy">0<span style="font-size:1rem">%</span></div><div class="stat-label">Occupancy Rate</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;"><i class="fa-solid fa-moon"></i></div>
+        <div class="stat-info"><div class="stat-val" id="stat-avgstay">0<span style="font-size:1rem"> nights</span></div><div class="stat-label">Avg. Stay</div></div>
+      </div>
+    </div>
+
+    <!-- Two Column: Chart + Calendar -->
+    <div class="two-col">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-solid fa-chart-bar" style="color:var(--brand);margin-right:8px;"></i>Monthly Revenue</div>
+        </div>
+        <div class="card-body">
+          <div class="chart-bars" id="revenue-chart">
+            <div style="color:var(--text-muted);font-size:0.85rem;font-weight:600;">Book rooms to see revenue data here.</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="fa-regular fa-calendar" style="color:var(--brand);margin-right:8px;"></i>Bookings Calendar</div>
+        </div>
+        <div class="card-body">
+          <div class="mini-cal" id="mini-cal"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Bookings Table -->
+    <div class="bookings-section card">
+      <div class="card-header">
+        <div class="card-title"><i class="fa-solid fa-list" style="color:var(--brand);margin-right:8px;"></i>Recent Bookings</div>
+        <a href="bookings.html" class="btn btn-ghost" style="padding:8px 16px;font-size:0.8rem;">View All</a>
+      </div>
+      <div class="table-wrapper" style="box-shadow:none;border-radius:0;border:none;">
+        <table class="admin-table">
+          <thead><tr>
+            <th>Guest</th><th>Room</th><th>Check-in</th><th>Check-out</th><th>Amount</th><th>Status</th><th>Action</th>
+          </tr></thead>
+          <tbody id="bookings-tbody">
+            <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">No bookings yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="modal-overlay" class="modal-overlay">
+  <div id="modal-delete" class="modal-content" style="max-width:400px;">
+    <div class="modal-header"><div><div class="modal-title" style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Delete Booking</div></div><button class="icon-btn" data-close="modal-overlay"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body"><p id="delete-confirm-text" style="color:var(--text-secondary);line-height:1.7;font-size:0.95rem;"></p></div>
+    <div class="modal-footer"><button class="btn btn-ghost" data-close="modal-overlay">Cancel</button><button id="delete-confirm-btn" class="btn btn-danger">Delete Booking</button></div>
+  </div>
+</div>
+<div id="toast" class="toast"></div>
+<script src="../../js/shared/storage.js"></script>
+<script src="../../js/shared/api.js"></script>
+<script src="../../js/shared/utils/dates.js"></script>
+<script src="../../js/admin/admin_dashboard.js"></script>
+</body>
+</html>
