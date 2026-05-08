@@ -5,7 +5,7 @@
   const { escapeHtml, byId } = window.QS_DOM;
   const { formatDateLong } = window.QS_DATES;
   async function loadBookings() {
-    const response = await API.bookings.mine({ page: 1, pageSize: 100 });
+    const response = await API.bookings.mine({ page: 1, pageSize: 20 });
     return (response.items || []).map(API.bookings.mapBooking);
   }
 

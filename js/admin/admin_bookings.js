@@ -20,7 +20,7 @@
 
   async function loadBookings() {
     try {
-      const response = await API.admin.bookings({ page: 1, pageSize: 100 });
+      const response = await API.admin.bookings({ page: 1, pageSize: 20 });
       state.bookings = (response.items || []).map(API.bookings.mapBooking);
       // Sort newest first
       state.bookings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));

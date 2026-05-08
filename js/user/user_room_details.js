@@ -327,7 +327,7 @@
           checkOut: checkout,
           guests,
           page: 1,
-          pageSize: 100,
+          pageSize: 20,
         });
         const available = (availability.items || []).some((x) => x.id === room.id);
         if (!available) {

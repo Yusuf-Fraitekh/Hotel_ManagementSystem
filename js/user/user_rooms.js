@@ -126,7 +126,7 @@
       priceMax: f.priceMax || undefined,
       sort: f.sort || "recommended",
       page: 1,
-      pageSize: 100,
+      pageSize: 20,
     });
     return (data.items || []).map(API.rooms.mapRoom);
   }

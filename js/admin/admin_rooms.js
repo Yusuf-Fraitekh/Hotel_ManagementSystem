@@ -23,8 +23,8 @@
 
   async function loadRooms() {
     const [roomsResult, bookingsResult] = await Promise.allSettled([
-      API.admin.rooms({ page: 1, pageSize: 100 }),
-      API.admin.bookings({ page: 1, pageSize: 100 })
+      API.admin.rooms({ page: 1, pageSize: 20 }),
+      API.admin.bookings({ page: 1, pageSize: 20 })
     ]);
 
     if (roomsResult.status === "fulfilled") {
