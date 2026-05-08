@@ -4,6 +4,7 @@ using HotelManagement.Api.DTOs.Bookings;
 using HotelManagement.Api.DTOs.Rooms;
 using HotelManagement.Api.DTOs.Shared;
 using HotelManagement.Application.Interfaces;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -40,7 +41,7 @@ public class AdminController : ControllerBase
     }
 
     [HttpGet("rooms")]
-    public async Task<ActionResult<PagedResponseDto<RoomResponseDto>>> GetRooms([FromQuery] int page = 1, [FromQuery] int pageSize = 500, CancellationToken cancellationToken = default)
+    public async Task<ActionResult<PagedResponseDto<RoomResponseDto>>> GetRooms([FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken cancellationToken = default)
     {
         var result = await _roomService.GetRoomsAsync(
             checkIn: null,
@@ -69,9 +70,13 @@ public class AdminController : ControllerBase
     }
 
     [HttpGet("bookings")]
-    public async Task<ActionResult<PagedResponseDto<BookingResponseDto>>> GetBookings([FromQuery] BookingListQueryDto query, CancellationToken cancellationToken)
+    public async Task<ActionResult<PagedResponseDto<BookingResponseDto>>> GetBookings(
+        [CustomizeValidator(Skip = true)][FromQuery] BookingListQueryDto query,
+        CancellationToken cancellationToken)
     {
-        var result = await _bookingService.GetAllBookingsAsync(query.Search, query.Sort, query.Page, query.PageSize, cancellationToken);
+        var page = query.Page < 1 ? 1 : query.Page;
+        var pageSize = query.PageSize < 1 ? 20 : Math.Min(query.PageSize, 20);
+        var result = await _bookingService.GetAllBookingsAsync(query.Search, query.Sort, page, pageSize, cancellationToken);
         return Ok(new PagedResponseDto<BookingResponseDto>
         {
             Items = result.Items.Select(x => x.ToBookingDto()).ToList(),
