@@ -19,6 +19,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     void loadRooms();
     initEventListeners();
+    startBedOptionsGuard();
   });
 
   async function loadRooms() {
@@ -136,6 +137,7 @@
 
     document.getElementById('f-name').value     = r.name || '';
     document.getElementById('f-type').value     = r.type || 'room';
+    unlockBedOptions();
     document.getElementById('f-bed').value      = r.bed  || 'single';
     document.getElementById('f-view').value     = r.view || 'city';
     document.getElementById('f-stayType').value = r.stayType || 'flex';
@@ -198,13 +200,19 @@
       setText('form-modal-title', 'Add New Room');
       setText('form-submit-btn', '<i class="fa-solid fa-floppy-disk"></i> Save Room');
       document.getElementById('room-form').reset();
+      unlockBedOptions();
       document.querySelectorAll('input[name="rtags"]').forEach(cb => cb.checked = false);
       if (window._adminRoomImages) window._adminRoomImages.clear();
       enforceFormLogic();
       openModal('form-modal');
     });
 
-    document.getElementById('f-bed')?.addEventListener('change', enforceFormLogic);
+    document.getElementById('f-bed')?.addEventListener('change', () => {
+      unlockBedOptions();
+      enforceFormLogic();
+    });
+    document.getElementById('f-bed')?.addEventListener('focus', unlockBedOptions);
+    document.getElementById('f-bed')?.addEventListener('click', unlockBedOptions);
     document.getElementById('f-guests')?.addEventListener('change', enforceFormLogic);
     
     document.getElementById('room-form')?.addEventListener('submit', e => { e.preventDefault(); void saveRoom(); });
@@ -258,28 +266,26 @@
     const bedEl = document.getElementById('f-bed');
     const guestsEl = document.getElementById('f-guests');
     if (!guestsEl || !bedEl) return;
+    // Keep admin input flexible: do not auto-lock bed or guest choices.
+    Array.from(guestsEl.options).forEach(opt => { opt.disabled = false; });
+    unlockBedOptions();
+  }
 
-    const bedVal = bedEl.value;
-    const guestVal = parseInt(guestsEl.value);
+  function unlockBedOptions() {
+    const bedEl = document.getElementById('f-bed');
+    if (!bedEl) return;
+    Array.from(bedEl.options).forEach(opt => {
+      opt.disabled = false;
+      opt.removeAttribute('disabled');
+    });
+  }
 
-    // Rule 1: Single bed -> strictly 1 guest
-    if (bedVal === 'single') {
-      guestsEl.value = "1";
-      Array.from(guestsEl.options).forEach(opt => opt.disabled = (parseInt(opt.value) > 1));
-    } else {
-      Array.from(guestsEl.options).forEach(opt => opt.disabled = false);
-    }
-
-    // Rule 2: 1 Guest -> Strictly single/mixed bed, CANNOT be double/king
-    if (guestsEl.value === "1") {
-      Array.from(bedEl.options).forEach(opt => {
-        if (opt.value === 'double' || opt.value === 'king') opt.disabled = true;
-        else opt.disabled = false;
-      });
-      if (bedEl.value === 'double' || bedEl.value === 'king') bedEl.value = 'single';
-    } else {
-      Array.from(bedEl.options).forEach(opt => opt.disabled = false);
-    }
+  function startBedOptionsGuard() {
+    const bedEl = document.getElementById('f-bed');
+    if (!bedEl) return;
+    unlockBedOptions();
+    const observer = new MutationObserver(() => unlockBedOptions());
+    observer.observe(bedEl, { subtree: true, attributes: true, attributeFilter: ['disabled'] });
   }
 
   function openDeleteModal(id) {

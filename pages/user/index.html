@@ -197,143 +197,13 @@
           <a class="btn btn-ghost" href="rooms.html"><i class="fa-solid fa-sliders"></i> View All Rooms</a>
         </div>
 
-        <div class="grid">
-
-          <a class="card" href="rooms.html?type=room&bed=single" aria-label="Single Rooms">
-            <div class="card__media">
-              <span class="tag"><i class="fa-solid fa-user"></i> Solo</span>
-              <img src="https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1600&q=80" alt="Single Room" loading="lazy">
-            </div>
+        <div class="grid" id="categoriesGrid">
+          <div class="card">
             <div class="card__body">
-              <div class="card__title">Single Rooms</div>
-              <div class="card__text">Perfect for solo travelers — practical, comfortable, and affordable.</div>
+              <div class="card__title">Loading categories...</div>
+              <div class="card__text">Fetching room categories from database.</div>
             </div>
-            <div class="card__foot">
-              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
-              <span class="muted" style="font-weight:900;">1 Guest</span>
-            </div>
-          </a>
-
-          <a class="card" href="rooms.html?type=room&bed=double" aria-label="Double Rooms">
-            <div class="card__media">
-              <span class="tag"><i class="fa-solid fa-user-group"></i> Double</span>
-              <img src="https://images.unsplash.com/photo-1551887373-6d7f8bfc4f84?auto=format&fit=crop&w=1600&q=80" alt="Double Room" loading="lazy">
-            </div>
-            <div class="card__body">
-              <div class="card__title">Double Rooms</div>
-              <div class="card__text">Ideal for two — double bed or twin setup for friends and couples.</div>
-            </div>
-            <div class="card__foot">
-              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
-              <span class="muted" style="font-weight:900;">2 Guests</span>
-            </div>
-          </a>
-
-          <a class="card" href="rooms.html?tag=couples&guests=2" aria-label="Couples Rooms">
-            <div class="card__media">
-              <span class="tag"><i class="fa-solid fa-heart"></i> Couples</span>
-              <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=80" alt="Couples Room" loading="lazy">
-            </div>
-            <div class="card__body">
-              <div class="card__title">Rooms for Couples</div>
-              <div class="card__text">Romantic and quiet rooms handpicked for couples seeking comfort.</div>
-            </div>
-            <div class="card__foot">
-              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
-              <span class="muted" style="font-weight:900;">Romantic</span>
-            </div>
-          </a>
-
-          <a class="card" href="rooms.html?view=sea" aria-label="Sea View Rooms">
-            <div class="card__media">
-              <span class="tag"><i class="fa-solid fa-water"></i> Sea View</span>
-              <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1600&q=80" alt="Sea View" loading="lazy">
-            </div>
-            <div class="card__body">
-              <div class="card__title">Sea View Rooms</div>
-              <div class="card__text">Wake up to a breathtaking ocean horizon every morning.</div>
-            </div>
-            <div class="card__foot">
-              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
-              <span class="muted" style="font-weight:900;">Sea View</span>
-            </div>
-          </a>
-
-          <a class="card" href="rooms.html?view=city" aria-label="City View Rooms">
-            <div class="card__media">
-              <span class="tag"><i class="fa-solid fa-city"></i> City View</span>
-              <img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1600&q=80" alt="City View" loading="lazy">
-            </div>
-            <div class="card__body">
-              <div class="card__title">City View Rooms</div>
-              <div class="card__text">Overlook the city skyline with stunning panoramic windows.</div>
-            </div>
-            <div class="card__foot">
-              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
-              <span class="muted" style="font-weight:900;">City View</span>
-            </div>
-          </a>
-
-          <a class="card" href="rooms.html?type=room&tag=business&stayType=business" aria-label="Business Rooms">
-            <div class="card__media">
-              <span class="tag"><i class="fa-solid fa-briefcase"></i> Business</span>
-              <img src="https://images.unsplash.com/photo-1582719371805-1c00da5819e8?auto=format&fit=crop&w=1600&q=80" alt="Business Room" loading="lazy">
-            </div>
-            <div class="card__body">
-              <div class="card__title">Business Rooms</div>
-              <div class="card__text">Ergonomic workspace and fast internet for productive stays.</div>
-            </div>
-            <div class="card__foot">
-              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
-              <span class="muted" style="font-weight:900;">Work</span>
-            </div>
-          </a>
-
-          <a class="card" href="rooms.html?type=suite&tag=private" aria-label="Private Suites">
-            <div class="card__media">
-              <span class="tag"><i class="fa-solid fa-crown"></i> Private</span>
-              <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1600&q=80" alt="Private Suite" loading="lazy">
-            </div>
-            <div class="card__body">
-              <div class="card__title">Private Suites</div>
-              <div class="card__text">Maximum privacy with a separate living area and premium touches.</div>
-            </div>
-            <div class="card__foot">
-              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
-              <span class="muted" style="font-weight:900;">Suite</span>
-            </div>
-          </a>
-
-          <a class="card" href="rooms.html?tag=family&stayType=family&guests=3" aria-label="Family Rooms">
-            <div class="card__media">
-              <span class="tag"><i class="fa-solid fa-people-roof"></i> Family</span>
-              <img src="https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1600&q=80" alt="Family Room" loading="lazy">
-            </div>
-            <div class="card__body">
-              <div class="card__title">Family Rooms & Suites</div>
-              <div class="card__text">Spacious layouts with multiple beds — perfect for the whole family.</div>
-            </div>
-            <div class="card__foot">
-              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
-              <span class="muted" style="font-weight:900;">3+ Guests</span>
-            </div>
-          </a>
-
-          <a class="card" href="rooms.html?type=suite" aria-label="All Suites">
-            <div class="card__media">
-              <span class="tag"><i class="fa-solid fa-star"></i> Luxury</span>
-              <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1600&q=80" alt="Luxury Suites" loading="lazy">
-            </div>
-            <div class="card__body">
-              <div class="card__title">Luxury Suites</div>
-              <div class="card__text">Our finest suites with top-tier services and premium comfort.</div>
-            </div>
-            <div class="card__foot">
-              <span class="btn btn-ghost" style="pointer-events:none;">Explore <i class="fa-solid fa-arrow-right"></i></span>
-              <span class="muted" style="font-weight:900;">Premium</span>
-            </div>
-          </a>
-
+          </div>
         </div>
       </div>
     </section>
@@ -353,6 +223,6 @@
   <script src="../../js/shared/utils/dates.js" defer></script>
   <script src="../../js/shared/ui/header.js" defer></script>
   <script src="../../js/shared/ui/user_nav.js" defer></script>
-  <script src="../../js/user/user_home.js" defer></script>
+  <script src="../../js/user/user_home.js?v=20260508-02" defer></script>
 </body>
 </html>
