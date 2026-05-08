@@ -21,13 +21,7 @@
 
   // --- GLOBAL AUTH GUARD ---
   document.addEventListener("DOMContentLoaded", () => {
-    const currentUser = (() => {
-      try {
-        return JSON.parse(sessionStorage.getItem("qs_user") || "null");
-      } catch (_) {
-        return null;
-      }
-    })();
+    const currentUser = window.QS_API?.getAuthUser?.() || null;
     const hasToken = !!sessionStorage.getItem("qs_access_token");
     const path = window.location.pathname.toLowerCase();
 

@@ -4,7 +4,7 @@
   const { KEYS, getJson, setJson } = window.QS_STORAGE;
   const API = window.QS_API;
   const { escapeHtml, byId } = window.QS_DOM;
-  const { todayIsoDate, calcNights, formatDateShort, doDatesOverlap } = window.QS_DATES;
+  const { todayIsoDate, calcNights, formatDateShort } = window.QS_DATES;
 
   /* ─── Booking Summary Banner ──────────────────────────────────── */
   function loadBookingSummary() {
@@ -29,72 +29,6 @@
     `;
   }
 
-  /* ─── Room Data from LocalStorage (Admin-synced) ────────────── */
-  const DEFAULT_ROOMS = [
-    {
-      id: 1, floor: 1,
-      name: "Economy Single Room", type: "room", bed: "single", view: "city",
-      tags: [], maxGuests: 1, price: 220, stayType: "flex", stars: 3,
-      image: "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1200&q=80",
-      description: "A practical choice for short-term individual stays with essential amenities."
-    },
-    {
-      id: 2, floor: 1,
-      name: "Business Single Room", type: "room", bed: "single", view: "city",
-      tags: ["business"], maxGuests: 1, price: 280, stayType: "business", stars: 4,
-      image: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=80",
-      description: "Designed for business travelers, featuring a dedicated workspace."
-    },
-    {
-      id: 3, floor: 1,
-      name: "Standard Double Room", type: "room", bed: "double", view: "city",
-      tags: [], maxGuests: 2, price: 320, stayType: "flex", stars: 4,
-      image: "https://images.unsplash.com/photo-1551887373-6d7f8bfc4f84?auto=format&fit=crop&w=1200&q=80",
-      description: "Comfortable room with a double bed, perfect for couples or friends."
-    },
-    {
-      id: 4, floor: 2,
-      name: "Ocean View Double", type: "room", bed: "double", view: "sea",
-      tags: ["couples"], maxGuests: 2, price: 420, stayType: "flex", stars: 4,
-      image: "https://images.unsplash.com/photo-1501117716987-c8e1ecb2108a?auto=format&fit=crop&w=1200&q=80",
-      description: "Beautifully appointed room with a stunning view of the coastline."
-    },
-    {
-      id: 5, floor: 2,
-      name: "Executive Suite", type: "suite", bed: "king", view: "city",
-      tags: ["private", "business"], maxGuests: 2, price: 650, stayType: "business", stars: 5,
-      image: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
-      description: "Spacious suite with a private living area and premium services."
-    },
-    {
-      id: 6, floor: 2,
-      name: "Luxury Sea View Suite", type: "suite", bed: "king", view: "sea",
-      tags: ["private", "couples"], maxGuests: 2, price: 780, stayType: "flex", stars: 5,
-      image: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200&q=80",
-      description: "Ultra-luxury suite featuring a private balcony overlooking the sea."
-    },
-    {
-      id: 7, floor: 3,
-      name: "Family Two-Bedroom Suite", type: "suite", bed: "mixed", view: "city",
-      tags: ["family"], maxGuests: 4, price: 720, stayType: "family", stars: 4,
-      image: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1200&q=80",
-      description: "Ideal for families up to 4, offering separate spaces and shared amenities."
-    },
-    {
-      id: 8, floor: 3,
-      name: "Grand Family Sea View", type: "suite", bed: "mixed", view: "sea",
-      tags: ["family"], maxGuests: 5, price: 880, stayType: "family", stars: 5,
-      image: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1200&q=80",
-      description: "Our largest suite for big families, combining luxury with space."
-    },
-    {
-      id: 9, floor: 4,
-      name: "Business King Room", type: "room", bed: "double", view: "city",
-      tags: ["business"], maxGuests: 2, price: 360, stayType: "business", stars: 4,
-      image: "https://images.unsplash.com/photo-1582719371805-1c00da5819e8?auto=format&fit=crop&w=1200&q=80",
-      description: "Equipped with high-speed internet and an ergonomic workstation."
-    }
-  ];
 
   /* ─── Helper: get element value safely ───────────────────────── */
   function getVal(id) {
@@ -175,32 +109,6 @@
   }
 
   /* ─── Filter Logic ────────────────────────────────────────────── */
-  
-  function getRoomOccupancy(roomId) {
-    const today = todayIsoDate();
-    const allBookings = getJson(KEYS.bookings, []);
-    let occupiedUntil = null;
-    
-    for (const b of allBookings) {
-        if (b.roomId === roomId && b.checkout > today && b.checkin <= today) {
-            if (!occupiedUntil || b.checkout > occupiedUntil) {
-                occupiedUntil = b.checkout;
-            }
-        }
-    }
-    return occupiedUntil;
-  }
-  
-  // Custom filter logic hook to exclude strictly booked rooms from Date filters
-
-  function getRoomsDB() {
-    // Always read fresh from LocalStorage so admin changes reflect instantly
-    const stored = getJson(KEYS.rooms, null);
-    if (stored && stored.length > 0) return stored;
-    // Fallback: write defaults then return them
-    setJson(KEYS.rooms, DEFAULT_ROOMS);
-    return DEFAULT_ROOMS;
-  }
 
   async function filterRooms() {
     const f = getCurrentFilters();
@@ -253,12 +161,8 @@
       const bedLabel   = { single: "Single Bed", double: "Double Bed", king: "King Bed", mixed: "Mixed Beds" }[room.bed] || room.bed;
       const stayLabel  = { flex: "Flexible", business: "Business", family: "Family" }[room.stayType] || room.stayType;
 
-      
-      const occupancyBadge = "";
-
       return `
         <article class="room-card" style="position:relative;">
-          ${occupancyBadge}
           <div class="room-card__media">
 
             <img src="${escapeHtml((room.images && room.images[0]) || room.image || '')}" alt="${escapeHtml(room.name)}" loading="lazy" onerror="this.src='https://placehold.co/600x400?text=No+Image'">

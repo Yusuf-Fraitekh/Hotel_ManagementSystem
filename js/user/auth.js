@@ -1,7 +1,6 @@
 (function () {
   "use strict";
 
-  const { KEYS, setJson } = window.QS_STORAGE;
   const API = window.QS_API;
 
   function qs(selector) {
@@ -21,16 +20,6 @@
   function clearMessages(loginMessage, registerMessage) {
     loginMessage.style.display = "none";
     registerMessage.style.display = "none";
-  }
-
-  function getInitials(name) {
-    const parts = String(name || "")
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean);
-    const first = parts[0]?.[0] || "U";
-    const second = parts[1]?.[0] || "";
-    return (first + second).toUpperCase();
   }
 
   function getPostLoginUrl(role) {
@@ -102,14 +91,6 @@
       try {
         const result = await API.auth.login(email, password);
         API.setSession(result);
-        setJson(KEYS.user, {
-          name: result.user.fullName,
-          email: result.user.email,
-          initials: getInitials(result.user.fullName),
-          role: String(result.user.role || "user").toLowerCase(),
-          phone: result.user.phone || "",
-          id: result.user.id,
-        });
 
         displayMessage(loginMessage, `Welcome back, ${result.user.fullName}! Redirecting...`, "success");
         setTimeout(() => {
@@ -147,15 +128,13 @@
       }
 
       try {
-        await API.auth.register(username, email, password);
-        displayMessage(registerMessage, `Account created successfully, ${username}!`, "success");
+        const result = await API.auth.register(username, email, password);
+        // Backend returns a token immediately on registration — use it to auto-login.
+        API.setSession(result);
+        displayMessage(registerMessage, `Welcome, ${username}! Redirecting…`, "success");
         setTimeout(() => {
-          container.classList.remove("active");
-          if(byId("loginEmail")) byId("loginEmail").value = email;
-          else if(byId("loginUsername")) byId("loginUsername").value = email;
-          clearMessages(loginMessage, registerMessage);
-          displayMessage(loginMessage, "Account ready. Please sign in.", "success");
-        }, 1200);
+          window.location.href = getPostLoginUrl(result.user?.role);
+        }, 900);
       } catch (err) {
         displayMessage(registerMessage, err.message || "Registration failed.", "error");
       }

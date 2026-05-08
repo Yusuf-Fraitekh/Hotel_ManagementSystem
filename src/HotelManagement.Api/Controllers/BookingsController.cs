@@ -53,7 +53,7 @@ public class BookingsController : ControllerBase
         };
         var created = await _bookingService.CreateAsync(booking, cancellationToken);
         created = await _dbContext.Bookings.Include(x => x.User).Include(x => x.Room).FirstAsync(x => x.Id == created.Id, cancellationToken);
-        return Ok(created.ToBookingDto());
+        return CreatedAtAction(nameof(GetMine), new { }, created.ToBookingDto());
     }
 
     [HttpPatch("{id:int}/extend")]

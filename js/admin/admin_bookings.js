@@ -4,7 +4,6 @@
   const { escapeHtml } = window.QS_DOM || {
     escapeHtml: str => str ? String(str).replace(/[&<>'"]/g, t => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[t])) : ''
   };
-  const { } = window.QS_STORAGE;
   const API = window.QS_API;
 
   let state = {
@@ -20,12 +19,19 @@
   });
 
   async function loadBookings() {
-    const response = await API.admin.bookings({ page: 1, pageSize: 500 });
-    state.bookings = (response.items || []).map(API.bookings.mapBooking);
-    // Sort newest first
-    state.bookings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    renderStats();
-    applyFilters();
+    try {
+      const response = await API.admin.bookings({ page: 1, pageSize: 100 });
+      state.bookings = (response.items || []).map(API.bookings.mapBooking);
+      // Sort newest first
+      state.bookings.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      renderStats();
+      applyFilters();
+    } catch (err) {
+      state.bookings = [];
+      renderStats();
+      renderGrid([]);
+      showToast(err.message || "Failed to load bookings.");
+    }
   }
 
   function renderStats() {
@@ -48,7 +54,7 @@
         (b.id         && String(b.id).toLowerCase().includes(q)) ||
         (b.roomName   && b.roomName.toLowerCase().includes(q))   ||
         (b.userName   && b.userName.toLowerCase().includes(q))   ||
-        (b.userId     && b.userId.toLowerCase().includes(q))
+        (b.userId     && String(b.userId).toLowerCase().includes(q))
       );
     }
     state.filtered = res;
@@ -73,7 +79,7 @@
     tbody.innerHTML = list.map(b => {
       const nights = b.nights || 1;
       // Derive initials from userName or userId (email)
-      const displayName = b.userName || b.userId || 'Unknown';
+      const displayName = String(b.userName || b.userId || 'Unknown');
       const initials = displayName
         .split(/[\s@]+/).filter(p => p.length > 0)
         .map(p => p[0].toUpperCase()).slice(0, 2).join('');
@@ -124,12 +130,17 @@
 
     document.getElementById('confirm-delete-btn')?.addEventListener('click', async () => {
       if (!state.deletingId) return;
-      state.bookings = state.bookings.filter(b => String(b.id) !== String(state.deletingId));
-      await API.admin.deleteBooking(state.deletingId);
+      const id = state.deletingId;
       state.deletingId = null;
       closeModal('modal-overlay');
-      void loadBookings();
-      showToast('Booking permanently deleted.', 'success');
+      try {
+        await API.admin.deleteBooking(id);
+        showToast('Booking permanently deleted.', 'success');
+        await loadBookings();
+      } catch (err) {
+        showToast(err.message || 'Failed to delete booking.', 'error');
+        await loadBookings();
+      }
     });
 
     document.querySelectorAll('[data-close]').forEach(btn => {

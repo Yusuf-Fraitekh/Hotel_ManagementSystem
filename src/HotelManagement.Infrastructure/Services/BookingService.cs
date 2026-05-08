@@ -4,6 +4,7 @@ using HotelManagement.Domain.Entities;
 using HotelManagement.Domain.Enums;
 using HotelManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace HotelManagement.Infrastructure.Services;
 
@@ -18,11 +19,17 @@ public class BookingService : IBookingService
 
     public async Task<Booking> CreateAsync(Booking booking, CancellationToken cancellationToken = default)
     {
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        if (booking.CheckInDate < today)
+        {
+            throw new AppException("Check-in date cannot be in the past.", 400);
+        }
         if (booking.CheckOutDate <= booking.CheckInDate)
         {
             throw new AppException("Checkout date must be after checkin date.", 400);
         }
 
+        await using var tx = await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken);
         var room = await _dbContext.Rooms.FirstOrDefaultAsync(x => x.Id == booking.RoomId && x.IsActive, cancellationToken)
                    ?? throw new AppException("Room not found.", 404);
         if (booking.GuestsCount > room.MaxGuests)
@@ -42,16 +49,22 @@ public class BookingService : IBookingService
 
         await _dbContext.Bookings.AddAsync(booking, cancellationToken);
         await _dbContext.SaveChangesAsync(cancellationToken);
+        await tx.CommitAsync(cancellationToken);
         return booking;
     }
 
     public async Task<Booking> ExtendAsync(int bookingId, int userId, DateOnly newCheckoutDate, CancellationToken cancellationToken = default)
     {
+        await using var tx = await _dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable, cancellationToken);
         var booking = await _dbContext.Bookings.FirstOrDefaultAsync(x => x.Id == bookingId && x.UserId == userId, cancellationToken)
                       ?? throw new AppException("Booking not found.", 404);
         if (newCheckoutDate <= booking.CheckOutDate)
         {
             throw new AppException("New checkout date must be later than current checkout date.", 400);
+        }
+        if (booking.CheckInDate < DateOnly.FromDateTime(DateTime.UtcNow))
+        {
+            throw new AppException("Past bookings cannot be extended.", 400);
         }
 
         var overlap = await _dbContext.Bookings.AnyAsync(x =>
@@ -68,6 +81,7 @@ public class BookingService : IBookingService
         booking.CheckOutDate = newCheckoutDate;
         booking.UpdatedAt = DateTime.UtcNow;
         await _dbContext.SaveChangesAsync(cancellationToken);
+        await tx.CommitAsync(cancellationToken);
         return booking;
     }
 
@@ -99,6 +113,7 @@ public class BookingService : IBookingService
     public async Task<PagedResult<Booking>> GetUserBookingsAsync(int userId, string? sort, int page, int pageSize, CancellationToken cancellationToken = default)
     {
         var query = _dbContext.Bookings
+            .Include(x => x.User)
             .Include(x => x.Room)
             .Where(x => x.UserId == userId)
             .AsQueryable();

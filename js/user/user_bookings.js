@@ -1,29 +1,12 @@
 (function () {
   "use strict";
 
-  const { KEYS, remove } = window.QS_STORAGE;
   const API = window.QS_API;
   const { escapeHtml, byId } = window.QS_DOM;
-  const { doDatesOverlap, formatDateLong } = window.QS_DATES;
-
-  function getUser() {
-    return getJson(KEYS.user, null);
-  }
+  const { formatDateLong } = window.QS_DATES;
   async function loadBookings() {
-    const response = await API.bookings.mine({ page: 1, pageSize: 200 });
+    const response = await API.bookings.mine({ page: 1, pageSize: 100 });
     return (response.items || []).map(API.bookings.mapBooking);
-  }
-
-  function checkExtensionOverlap(roomId, excludeBookingId, newCheckin, newCheckout) {
-    const all = loadBookings();
-    for (const b of all) {
-      if (b.id !== excludeBookingId && b.roomId === roomId) {
-        if (doDatesOverlap(newCheckin, newCheckout, b.checkin, b.checkout)) {
-          return true; // Overlap found!
-        }
-      }
-    }
-    return false;
   }
 
   function canCancelBooking(checkinStr) {
@@ -103,14 +86,36 @@
 
     info.textContent = `Number of bookings: ${list.length}`;
 
+    const today = new Date().toISOString().split("T")[0];
+
     grid.innerHTML = list.map((b) => {
         const stayTypeLabel = b.stayType === "business" ? "Business" : b.stayType === "family" ? "Family" : "Flexible";
-        const today = new Date().toISOString().split("T")[0];
-        
+        const isCancelled = b.status === "cancelled";
+        const isPast      = b.checkout < today;
+
+        const statusBadge = isCancelled
+          ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#fef2f2;color:#b91c1c;padding:3px 10px;border-radius:8px;font-size:0.78rem;font-weight:800;"><i class="fa-solid fa-xmark-circle"></i> Cancelled</span>`
+          : isPast
+            ? `<span style="display:inline-flex;align-items:center;gap:5px;background:#f1f5f9;color:#64748b;padding:3px 10px;border-radius:8px;font-size:0.78rem;font-weight:800;"><i class="fa-solid fa-clock-rotate-left"></i> Completed</span>`
+            : `<span style="display:inline-flex;align-items:center;gap:5px;background:#f0fdf4;color:#15803d;padding:3px 10px;border-radius:8px;font-size:0.78rem;font-weight:800;"><i class="fa-solid fa-circle-check"></i> Confirmed</span>`;
+
+        const actionButtons = isCancelled ? "" : `
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-primary extent-btn" ${isPast ? 'disabled style="opacity:0.5;"' : ""}>
+              <i class="fa-solid fa-calendar-plus"></i> Extend
+            </button>
+            <button type="button" class="btn btn-outline cancel-btn">
+              <i class="fa-solid fa-xmark"></i> Cancel Booking
+            </button>
+          </div>`;
+
         return `
-          <article class="booking-card" data-id="${b.id}" data-room="${b.roomId}">
+          <article class="booking-card" data-id="${b.id}" data-room="${b.roomId}" style="${isCancelled ? 'opacity:0.7;' : ''}">
             <div class="booking-main">
-              <div class="booking-title">${escapeHtml(b.roomName || "Room")}</div>
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+                <div class="booking-title">${escapeHtml(b.roomName || "Room")}</div>
+                ${statusBadge}
+              </div>
               <div class="booking-meta">
                 <span><i class="fa-regular fa-calendar-days"></i> ${formatDateLong(b.checkin)} - ${formatDateLong(b.checkout)}</span>
                 <span><i class="fa-solid fa-moon"></i> <span class="nt-count">${b.nights || "-"}</span> Night(s)</span>
@@ -128,14 +133,7 @@
                   ${b.pricePerNight} SAR per night
                 </div>
               </div>
-              <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                <button type="button" class="btn btn-primary extent-btn" ${b.checkout < today ? 'disabled style="opacity:0.5;"' : ""}>
-                  <i class="fa-solid fa-calendar-plus"></i> Extend
-                </button>
-                <button type="button" class="btn btn-outline cancel-btn">
-                  <i class="fa-solid fa-xmark"></i> Cancel Booking
-                </button>
-              </div>
+              ${actionButtons}
             </div>
           </article>
         `;
@@ -259,15 +257,27 @@
   }
 
 
-  function clearAllBookings() {
+  async function clearAllBookings() {
     const all = await loadBookings();
-    if (!all.length) return;
+    const cancellable = all.filter(b => b.status !== "cancelled");
+    if (!cancellable.length) {
+      alert("No active bookings to cancel.");
+      return;
+    }
 
-    const sure = window.confirm("All bookings will be cleared from this browser. Are you sure?");
+    const sure = window.confirm(`Cancel all ${cancellable.length} active booking(s) on the server? This cannot be undone.`);
     if (!sure) return;
 
-    for (const b of all) {
-      await API.bookings.cancel(b.id);
+    const errors = [];
+    for (const b of cancellable) {
+      try {
+        await API.bookings.cancel(b.id);
+      } catch (err) {
+        errors.push(`#${b.id}: ${err.message}`);
+      }
+    }
+    if (errors.length) {
+      alert("Some bookings could not be cancelled:\n" + errors.join("\n"));
     }
     await applyAndRender();
   }

@@ -14,19 +14,25 @@
   }
 
   async function refreshStats() {
-    const stats = await API.admin.settingsStats();
-    document.getElementById("db-rooms").textContent = stats.rooms;
-    document.getElementById("db-bookings").textContent = stats.bookings;
-    document.getElementById("db-user").textContent = stats.users;
+    try {
+      const stats = await API.admin.settingsStats();
+      document.getElementById("db-rooms").textContent = stats.rooms;
+      document.getElementById("db-bookings").textContent = stats.bookings;
+      document.getElementById("db-user").textContent = stats.users;
+    } catch (err) {
+      showToast(err.message || "Failed to load stats.", false);
+    }
   }
 
   function initHotelInfo() {
-    API.admin.hotelInfo().then((info) => {
-      document.getElementById("hotel-name").value = info.name || "";
-      document.getElementById("hotel-city").value = info.city || "";
-      document.getElementById("hotel-country").value = info.country || "";
-      document.getElementById("hotel-email").value = info.email || "";
-    });
+    API.admin.hotelInfo()
+      .then((info) => {
+        document.getElementById("hotel-name").value = info.name || "";
+        document.getElementById("hotel-city").value = info.city || "";
+        document.getElementById("hotel-country").value = info.country || "";
+        document.getElementById("hotel-email").value = info.email || "";
+      })
+      .catch((err) => showToast(err.message || "Failed to load hotel info.", false));
 
     document.getElementById("save-hotel-btn").addEventListener("click", async () => {
       const updated = {
@@ -35,11 +41,15 @@
         country: document.getElementById("hotel-country").value.trim(),
         email: document.getElementById("hotel-email").value.trim(),
       };
-      await API.admin.updateHotelInfo(updated);
-      const m = document.getElementById("hotel-msg");
-      m.textContent = "✓ Information saved successfully.";
-      m.style.display = "block";
-      setTimeout(() => (m.style.display = "none"), 3000);
+      try {
+        await API.admin.updateHotelInfo(updated);
+        const m = document.getElementById("hotel-msg");
+        m.textContent = "✓ Information saved successfully.";
+        m.style.display = "block";
+        setTimeout(() => (m.style.display = "none"), 3000);
+      } catch (err) {
+        showToast(err.message || "Failed to save hotel info.", false);
+      }
     });
   }
 
@@ -51,24 +61,36 @@
 
     document.getElementById("clear-bookings-btn").addEventListener("click", async () => {
       if (!confirm("Delete ALL bookings from the system? This cannot be undone.")) return;
-      await API.admin.clearBookings();
-      await refreshStats();
-      showToast("All bookings deleted.");
+      try {
+        await API.admin.clearBookings();
+        await refreshStats();
+        showToast("All bookings deleted.");
+      } catch (err) {
+        showToast(err.message || "Failed to clear bookings.", false);
+      }
     });
 
     document.getElementById("reset-rooms-btn").addEventListener("click", async () => {
-      if (!confirm("Reset rooms to 3 defaults? All custom rooms will be lost.")) return;
-      await API.admin.resetRooms();
-      await refreshStats();
-      showToast("Rooms reset to defaults.");
+      if (!confirm("Reset rooms to defaults? All custom rooms will be lost.")) return;
+      try {
+        await API.admin.resetRooms();
+        await refreshStats();
+        showToast("Rooms reset to defaults.");
+      } catch (err) {
+        showToast(err.message || "Failed to reset rooms.", false);
+      }
     });
 
     document.getElementById("clear-all-btn").addEventListener("click", async () => {
-      if (!confirm("⚠️ This will DELETE everything — rooms, bookings, and user account. Proceed?")) return;
-      await API.admin.clearAllData();
-      window.QS_API.clearSession();
-      showToast("Database wiped. Redirecting...");
-      setTimeout(() => (window.location.href = "/pages/login-signin-page/authintcate.html"), 2500);
+      if (!confirm("⚠️ This will DELETE all rooms, bookings, and hotel data. User accounts are NOT deleted. Proceed?")) return;
+      try {
+        await API.admin.clearAllData();
+        window.QS_API.clearSession();
+        showToast("Database wiped. Redirecting...");
+        setTimeout(() => (window.location.href = "/pages/login-signin-page/authintcate.html"), 2500);
+      } catch (err) {
+        showToast(err.message || "Failed to wipe data.", false);
+      }
     });
   }
 
@@ -78,6 +100,6 @@
     await refreshStats();
   }
 
-  void init();
+  document.addEventListener("DOMContentLoaded", () => { void init(); });
 })();
 

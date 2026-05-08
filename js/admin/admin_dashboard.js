@@ -50,7 +50,7 @@
       renderStats({
         totalRevenue: summary.totalRevenue || 0,
         totalBookings: summary.totalBookings || 0,
-        occupancyRate: summary.activeRooms || 0,
+        activeRooms: summary.activeRooms || 0,
         avgStayDuration: avgStay
       });
       
@@ -71,7 +71,7 @@
     if (!stats) return;
     setText('stat-revenue',  `${stats.totalRevenue.toLocaleString()} SAR`);
     setText('stat-bookings', stats.totalBookings);
-    setText('stat-occupancy', `${stats.occupancyRate}<span>%</span>`);
+    setText('stat-occupancy', `${stats.activeRooms}<span> rooms</span>`);
     setText('stat-avgstay',  `${stats.avgStayDuration}<span> nights</span>`);
   }
 
@@ -108,7 +108,6 @@
           <div class="row-actions">
              <div class="icon-btn red del-btn" title="Delete" data-id="${escapeHtml(b.id)}"><i class="fa-solid fa-trash"></i></div>
           </div>
-        </td>
         </td>
       </tr>
       `;

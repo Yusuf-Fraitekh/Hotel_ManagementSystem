@@ -37,16 +37,17 @@ public static class MappingExtensions
     {
         Id = booking.Id,
         UserId = booking.UserId,
-        UserName = booking.User.FullName,
+        UserName = booking.User?.FullName ?? string.Empty,
         RoomId = booking.RoomId,
-        RoomName = booking.Room.Name,
+        RoomName = booking.Room?.Name ?? string.Empty,
         CheckInDate = booking.CheckInDate,
         CheckOutDate = booking.CheckOutDate,
         GuestsCount = booking.GuestsCount,
         StayType = booking.StayType,
-        PricePerNight = booking.Room.PricePerNight,
-        Total = (booking.CheckOutDate.DayNumber - booking.CheckInDate.DayNumber) * booking.Room.PricePerNight,
+        PricePerNight = booking.Room?.PricePerNight ?? 0,
+        Total = (booking.CheckOutDate.DayNumber - booking.CheckInDate.DayNumber) * (booking.Room?.PricePerNight ?? 0),
         Status = booking.Status.ToString(),
+        Notes = booking.Notes,
         CreatedAt = booking.CreatedAt
     };
 

@@ -2,7 +2,9 @@
   "use strict";
 
   function todayIsoDate() {
-    return new Date().toISOString().split("T")[0];
+    const now = new Date();
+    const tzOffset = now.getTimezoneOffset() * 60000;
+    return new Date(now.getTime() - tzOffset).toISOString().split("T")[0];
   }
 
   function calcNights(checkin, checkout) {

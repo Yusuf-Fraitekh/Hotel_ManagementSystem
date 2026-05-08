@@ -6,12 +6,6 @@
   };
   const API = window.QS_API;
 
-  const DEFAULT_ROOMS = [
-    { id:1, floor:1, name:"Economy Single Room", type:"room", bed:"single", view:"city", tags:[], maxGuests:1, price:220, stayType:"flex", stars:3, images:["https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1200&q=80"], description:"A practical choice for short-term individual stays." },
-    { id:2, floor:2, name:"Ocean View Double", type:"room", bed:"double", view:"sea", tags:["couples"], maxGuests:2, price:420, stayType:"flex", stars:4, images:["https://images.unsplash.com/photo-1501117716987-c8e1ecb2108a?auto=format&fit=crop&w=1200&q=80"], description:"Beautifully appointed room with a stunning view of the coastline." },
-    { id:3, floor:3, name:"Luxury Sea View Suite", type:"suite", bed:"king", view:"sea", tags:["private","couples"], maxGuests:2, price:780, stayType:"flex", stars:5, images:["https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1200&q=80"], description:"Ultra-luxury suite featuring a private balcony overlooking the sea." }
-  ];
-
   let state = {
     rooms: [],
     bookings: [],
@@ -29,8 +23,8 @@
 
   async function loadRooms() {
     const [roomsResult, bookingsResult] = await Promise.allSettled([
-      API.admin.rooms({ page: 1, pageSize: 500 }),
-      API.admin.bookings({ page: 1, pageSize: 500 })
+      API.admin.rooms({ page: 1, pageSize: 100 }),
+      API.admin.bookings({ page: 1, pageSize: 100 })
     ]);
 
     if (roomsResult.status === "fulfilled") {
@@ -182,17 +176,20 @@
     if (!images.length) { showToast('Please upload at least one room photo.', 'error'); return; }
 
     const payload = { name, type, bedType: bed, viewType: view, stayType, floor, maxGuests: guests, pricePerNight: price, description: desc, tags, images };
-    if (state.editingId) {
-      await API.rooms.update(parseInt(state.editingId, 10), payload);
-      showToast('Room updated successfully.', 'success');
-    } else {
-      await API.rooms.create(payload);
-      showToast('Room added and synced to user portal!', 'success');
+    try {
+      if (state.editingId) {
+        await API.rooms.update(parseInt(state.editingId, 10), payload);
+        showToast('Room updated successfully.', 'success');
+      } else {
+        await API.rooms.create(payload);
+        showToast('Room added and synced to user portal!', 'success');
+      }
+      if (window._adminRoomImages) window._adminRoomImages.clear();
+      closeModal('form-modal');
+      await loadRooms();
+    } catch (err) {
+      showToast(err.message || 'Failed to save room.', 'error');
     }
-    if (window._adminRoomImages) window._adminRoomImages.clear();
-
-    closeModal('form-modal');
-    await loadRooms();
   }
 
   function initEventListeners() {
@@ -219,13 +216,19 @@
       if (delBtn)  openDeleteModal(delBtn.dataset.id);
     });
 
-    document.getElementById('confirm-delete-btn')?.addEventListener('click', () => {
+    document.getElementById('confirm-delete-btn')?.addEventListener('click', async () => {
       if (!state.deletingId) return;
-      void API.rooms.remove(parseInt(state.deletingId, 10));
-      closeModal('delete-modal');
-      void loadRooms();
-      showToast('Room deleted.', 'success');
+      const id = state.deletingId;
       state.deletingId = null;
+      try {
+        await API.rooms.remove(parseInt(id, 10));
+        closeModal('delete-modal');
+        showToast('Room deleted.', 'success');
+        await loadRooms();
+      } catch (err) {
+        closeModal('delete-modal');
+        showToast(err.message || 'Failed to delete room.', 'error');
+      }
     });
 
     document.querySelectorAll('#type-filters .type-chip').forEach(chip => {

@@ -6,7 +6,6 @@
     (window.location.origin + "/api");
 
   const TOKEN_KEY = "qs_access_token";
-  const USER_KEY = "qs_user";
 
   function getToken() {
     return sessionStorage.getItem(TOKEN_KEY);
@@ -15,31 +14,48 @@
   function setSession(authResponse) {
     if (!authResponse) return;
     sessionStorage.setItem(TOKEN_KEY, authResponse.accessToken || "");
-    if (authResponse.user) {
-      sessionStorage.setItem(
-        USER_KEY,
-        JSON.stringify({
-          id: authResponse.user.id,
-          name: authResponse.user.fullName,
-          email: authResponse.user.email,
-          role: String(authResponse.user.role || "User").toLowerCase(),
-          phone: authResponse.user.phone || "",
-          initials: getInitials(authResponse.user.fullName),
-        })
-      );
-    }
   }
 
   function clearSession() {
     sessionStorage.removeItem(TOKEN_KEY);
-    sessionStorage.removeItem(USER_KEY);
   }
 
-  function getInitials(name) {
-    const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
-    const first = parts[0]?.[0] || "U";
-    const second = parts[1]?.[0] || "";
-    return (first + second).toUpperCase();
+  function decodeJwtPayload(token) {
+    if (!token || typeof token !== "string") return null;
+    const parts = token.split(".");
+    if (parts.length < 2) return null;
+    try {
+      const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+      const json = atob(base64);
+      return JSON.parse(json);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function getAuthUser() {
+    const token = getToken();
+    if (!token) return null;
+    const payload = decodeJwtPayload(token);
+    if (!payload) return null;
+
+    const role =
+      String(payload.role || payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] || "user")
+        .toLowerCase();
+    const name =
+      String(payload.name || payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] || "User");
+    const idRaw =
+      payload.nameid ||
+      payload.sub ||
+      payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+    const id = Number(idRaw);
+
+    return {
+      id: Number.isFinite(id) ? id : null,
+      name,
+      email: String(payload.email || ""),
+      role,
+    };
   }
 
   async function request(path, options) {
@@ -63,7 +79,12 @@
         payload = null;
       }
       if (response.status === 401 || response.status === 403) {
-        if (window.location.pathname.toLowerCase().includes("/pages/admin/")) {
+        const p = window.location.pathname.toLowerCase();
+        const isProtected =
+          p.includes("/pages/admin/") ||
+          p.includes("/user/account.html") ||
+          p.includes("/user/bookings.html");
+        if (isProtected) {
           clearSession();
           window.location.href = "/pages/login-signin-page/authintcate.html";
         }
@@ -124,7 +145,8 @@
       pricePerNight: b.pricePerNight,
       total: b.total,
       nights,
-      status: b.status,
+      status: (b.status || "Confirmed").toLowerCase(),
+      notes: b.notes || null,
       createdAt: b.createdAt,
     };
   }
@@ -132,6 +154,7 @@
   window.QS_API = {
     baseUrl: API_BASE_URL,
     getToken,
+    getAuthUser,
     setSession,
     clearSession,
     request,

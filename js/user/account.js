@@ -1,21 +1,12 @@
 (function () {
   "use strict";
 
-  const { KEYS, setJson, remove } = window.QS_STORAGE;
   const API = window.QS_API;
   const { escapeHtml, byId } = window.QS_DOM;
   const { formatDateLong } = window.QS_DATES;
 
-  function loadUser() {
-    try {
-      return JSON.parse(localStorage.getItem(KEYS.user) || "null");
-    } catch (_) {
-      return null;
-    }
-  }
-
   async function loadBookings() {
-    const response = await API.bookings.mine({ page: 1, pageSize: 200 });
+    const response = await API.bookings.mine({ page: 1, pageSize: 100 });
     return (response.items || []).map(API.bookings.mapBooking);
   }
 
@@ -26,9 +17,7 @@
     return { totalBookings, totalNights, totalAmount };
   }
 
-  function renderUser() {
-    const user = loadUser();
-
+  function renderUser(user) {
     const avatarInitialsEl = byId("avatarInitials");
     const displayNameEl = byId("displayName");
     const displaySubtitleEl = byId("displaySubtitle");
@@ -48,7 +37,7 @@
       return;
     }
 
-    const initials = user.initials || window.QS_USER_NAV?.getInitials?.(user.name) || "U";
+    const initials = window.QS_USER_NAV?.getInitials?.(user.name) || "U";
     avatarInitialsEl.textContent = initials;
     displayNameEl.textContent = user.name || "User";
     displaySubtitleEl.textContent = user.email ? user.email : "QuickStay Member";
@@ -57,13 +46,14 @@
     inputNameEl.value = user.name || "";
     inputEmailEl.value = user.email || "";
 
-    // Lock email if Admin
-    if (user.email === "admin@quickstay.com" || user.isAdmin) {
-      inputEmailEl.readOnly = true;
-      inputEmailEl.style.opacity = "0.6";
-      inputEmailEl.style.cursor = "not-allowed";
-      inputEmailEl.title = "Admin email cannot be altered.";
-    }
+    // Email cannot be changed via this form (the API only accepts fullName + phone).
+    // Lock the field for all users so there is no false expectation.
+    inputEmailEl.readOnly = true;
+    inputEmailEl.style.opacity = "0.6";
+    inputEmailEl.style.cursor = "not-allowed";
+    inputEmailEl.title = String(user.role || "").toLowerCase() === "admin"
+      ? "Admin email cannot be altered."
+      : "Email cannot be changed here. Contact support if needed.";
   }
 
   async function renderStatsAndPreview() {
@@ -138,7 +128,7 @@
     msgEl.style.display = "block";
   }
 
-  function initForm() {
+  function initForm(user) {
     const form = byId("accountForm");
     const msg = byId("formMessage");
     const logoutBtn = byId("logoutBtn");
@@ -150,66 +140,65 @@
 
       const name = byId("inputName").value.trim();
       const email = byId("inputEmail").value.trim();
-      const current = loadUser() || {};
-
       if (name && name.length < 3) {
         setMessage(msg, "Name must be at least 3 characters.", "error");
         return;
       }
 
-      if (email && email !== "admin@quickstay.com" && current.email !== "admin@quickstay.com") {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-          setMessage(msg, "Invalid email address.", "error");
-          return;
-        }
-      }
-
-      const updated = {
-        ...current,
-        name: name || current.name || "User",
-        email: (current.email === "admin@quickstay.com" || current.isAdmin) ? current.email : (email || current.email || ""),
-      };
-      updated.initials = window.QS_USER_NAV?.getInitials?.(updated.name) || "U";
-
+      // Email is read-only and not sent to the API — only fullName and phone are updatable.
       try {
-        await API.users.updateMe(updated.name, updated.phone || null);
+        await API.users.updateMe(name || user.name || "User", user.phone || null);
         const me = await API.users.me();
-        setJson(KEYS.user, {
+        const refreshed = {
           id: me.id,
           name: me.fullName,
           email: me.email,
           role: String(me.role || "").toLowerCase(),
           phone: me.phone || "",
-          initials: window.QS_USER_NAV?.getInitials?.(me.fullName) || "U",
-        });
-        renderUser();
+        };
+        renderUser(refreshed);
+        user = refreshed;
         setMessage(msg, "Account changes saved successfully.", "success");
       } catch (err) {
         setMessage(msg, err.message || "Failed to save account changes.", "error");
       }
     });
 
-    logoutBtn.addEventListener("click", (e) => {
+    logoutBtn.addEventListener("click", async (e) => {
       e.preventDefault();
-      window.QS_API.clearSession();
-      window.QS_STORAGE.remove(window.QS_STORAGE.KEYS.user);
+      try { await API.auth.logout(); } catch (_) { /* stateless — ignore */ }
+      API.clearSession();
       window.location.replace("index.html");
     });
 
-    clearDataBtn.addEventListener("click", (e) => {
+    clearDataBtn.addEventListener("click", async (e) => {
       e.preventDefault();
-      window.QS_API.clearSession();
-      window.QS_STORAGE.remove(window.QS_STORAGE.KEYS.user);
+      if (!confirm("Sign out and clear your local session?")) return;
+      try { await API.auth.logout(); } catch (_) { /* stateless — ignore */ }
+      API.clearSession();
       window.location.replace("index.html");
     });
   }
 
-  function init() {
-    renderUser();
+  async function init() {
+    let user = API.getAuthUser();
+    try {
+      const me = await API.users.me();
+      user = {
+        id: me.id,
+        name: me.fullName,
+        email: me.email,
+        role: String(me.role || "").toLowerCase(),
+        phone: me.phone || "",
+      };
+    } catch (_) {
+      user = user ? { ...user, phone: "" } : null;
+    }
+
+    renderUser(user);
     void renderStatsAndPreview();
-    initForm();
+    initForm(user || { name: "User", email: "", phone: "" });
   }
 
-  document.addEventListener("DOMContentLoaded", init);
+  document.addEventListener("DOMContentLoaded", () => { void init(); });
 })();

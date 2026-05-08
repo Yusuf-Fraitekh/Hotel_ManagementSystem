@@ -4,7 +4,7 @@
   const { KEYS, getJson, setJson } = window.QS_STORAGE;
   const API = window.QS_API;
   const { escapeHtml, byId } = window.QS_DOM;
-  const { calcNights, doDatesOverlap } = window.QS_DATES;
+  const { calcNights } = window.QS_DATES;
 
   const style = document.createElement('style');
   style.innerHTML = `
@@ -21,24 +21,7 @@
   document.head.appendChild(style);
 
   function getUser() {
-    const user = getJson(KEYS.user, null);
-    const token = window.QS_API?.getToken?.();
-    if (!user || !token) return null;
-    return user;
-  }
-
-  /* ─── Room Data from LocalStorage (Admin-Synced) ────────────── */
-  const DEFAULT_ROOMS = [
-    { id:1, floor:1, name:"Economy Single Room", type:"room", bed:"single", view:"city", tags:[], maxGuests:1, price:220, stayType:"flex", stars:3, images:["https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1600&q=80","https://images.unsplash.com/photo-1501117716987-c8e1ecb2108a?auto=format&fit=crop&w=1600&q=80"], description:"Practical option for a short individual stay.", features:["Free Wi-Fi","Simple Workspace","Daily Cleaning","Independent AC"] },
-    { id:2, floor:2, name:"Ocean View Double", type:"room", bed:"double", view:"sea", tags:["couples"], maxGuests:2, price:420, stayType:"flex", stars:4, images:["https://images.unsplash.com/photo-1501117716987-c8e1ecb2108a?auto=format&fit=crop&w=1600&q=80","https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=80"], description:"Beautifully appointed room with a stunning view of the coastline.", features:["Sea View Balcony","Coffee Maker","King Bed","Soft Lighting"] },
-    { id:3, floor:3, name:"Luxury Sea View Suite", type:"suite", bed:"king", view:"sea", tags:["private","couples"], maxGuests:2, price:780, stayType:"flex", stars:5, images:["https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1600&q=80","https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1600&q=80"], description:"Ultra-luxury suite featuring a private balcony overlooking the sea.", features:["Private Balcony","Jacuzzi","Room Service","Butler on Request"] }
-  ];
-
-  function getRoomsDB() {
-    const stored = getJson(KEYS.rooms, null);
-    if (stored && stored.length > 0) return stored;
-    setJson(KEYS.rooms, DEFAULT_ROOMS);
-    return DEFAULT_ROOMS;
+    return API.getAuthUser();
   }
 
   async function getRoomById(id) {
@@ -192,7 +175,7 @@
                 </form>
 
                 <div class="alert">
-                  The booking will be saved locally in the browser under "My Bookings".
+                  Booking availability is validated in real-time before confirmation.
                 </div>
               </div>
             </aside>
@@ -255,17 +238,27 @@
 
     let pendingBooking = null;
 
+    const today = window.QS_DATES.todayIsoDate();
+    checkinEl.min = today;
+    checkoutEl.min = today;
+
+    checkinEl.addEventListener("change", () => {
+      checkoutEl.min = checkinEl.value || today;
+      if (checkoutEl.value && checkoutEl.value <= checkinEl.value) {
+        checkoutEl.value = "";
+      }
+    });
+
     if (draft) {
       if (draft.checkin) checkinEl.value = draft.checkin;
       if (draft.checkout) checkoutEl.value = draft.checkout;
       if (draft.guests) guestsEl.value = String(draft.guests);
       if (draft.stayType) stayTypeEl.value = draft.stayType;
     } else {
-      const today = new Date();
-      const tomorrow = new Date();
-      tomorrow.setDate(today.getDate() + 1);
-      checkinEl.valueAsDate = today;
-      checkoutEl.valueAsDate = tomorrow;
+      checkinEl.value = today;
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      checkoutEl.value = tomorrow.toISOString().split("T")[0];
     }
     
     function closeModal() {
@@ -276,31 +269,31 @@
     if(closeBtn) closeBtn.onclick = closeModal;
     if(cancelBtn) cancelBtn.onclick = closeModal;
 
-    if(confirmBtn) {
-        confirmBtn.onclick = async () => {
-            if(!pendingBooking) return;
-            try {
-              if (pendingBooking.isExtension && pendingBooking.existingId) {
-                await API.bookings.extend(pendingBooking.existingId, pendingBooking.checkout);
-              } else {
-                await API.bookings.create({
-                  roomId: pendingBooking.roomId,
-                  checkInDate: pendingBooking.checkin,
-                  checkOutDate: pendingBooking.checkout,
-                  guestsCount: pendingBooking.guests,
-                  stayType: pendingBooking.stayType,
-                  notes: pendingBooking.notes || null
-                });
-              }
-              setJson(KEYS.bookingDraft, null);
-              window.location.href = "bookings.html";
-            } catch (err) {
-              alert(err.message || "Booking operation failed.");
-            }
-        };
+    if (confirmBtn) {
+      confirmBtn.onclick = async () => {
+        if (!pendingBooking) return;
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Processing…";
+        try {
+          await API.bookings.create({
+            roomId: pendingBooking.roomId,
+            checkInDate: pendingBooking.checkin,
+            checkOutDate: pendingBooking.checkout,
+            guestsCount: pendingBooking.guests,
+            stayType: pendingBooking.stayType,
+            notes: pendingBooking.notes || null,
+          });
+          setJson(KEYS.bookingDraft, null);
+          window.location.href = "bookings.html";
+        } catch (err) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Confirm & Book";
+          alert(err.message || "Booking failed. Please try again.");
+        }
+      };
     }
 
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       
       const user = getUser();
@@ -320,8 +313,29 @@
         alert("Please select valid dates. Checkout must be after check-in.");
         return;
       }
+      if (checkin < today) {
+        alert("Check-in date cannot be in the past.");
+        return;
+      }
       if (guests < 1 || guests > room.maxGuests) {
         alert(`This room accommodates up to ${room.maxGuests} guests.`);
+        return;
+      }
+      try {
+        const availability = await API.rooms.list({
+          checkIn: checkin,
+          checkOut: checkout,
+          guests,
+          page: 1,
+          pageSize: 100,
+        });
+        const available = (availability.items || []).some((x) => x.id === room.id);
+        if (!available) {
+          alert("This room is no longer available for the selected dates. Please choose different dates.");
+          return;
+        }
+      } catch (err) {
+        alert(err.message || "Failed to validate room availability.");
         return;
       }
 
