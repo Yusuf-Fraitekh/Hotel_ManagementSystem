@@ -53,7 +53,16 @@ if (Directory.Exists(Path.Combine(frontendRoot, "pages")))
     app.UseStaticFiles(new StaticFileOptions
     {
         FileProvider = new PhysicalFileProvider(frontendRoot),
-        RequestPath = ""
+        RequestPath = "",
+        OnPrepareResponse = ctx =>
+        {
+            var path = ctx.File.Name;
+            if (path.EndsWith(".js") || path.EndsWith(".css") || path.EndsWith(".html"))
+            {
+                ctx.Context.Response.Headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+                ctx.Context.Response.Headers["Pragma"] = "no-cache";
+            }
+        }
     });
 }
 app.MapControllers();

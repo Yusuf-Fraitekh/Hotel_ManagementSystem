@@ -210,13 +210,24 @@
       const guestsData = buildGuestMap(guests, bookings || []);
       guestsData.sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));
 
-      const activeCount = guestsData.filter(g => g.isActive).length;
-      const totalRevenue = guestsData.reduce((sum, g) => sum + (g.totalSpent || 0), 0);
+      // When a search is active, filter the built map to only show matching guests.
+      // buildGuestMap creates entries for all booking users, so without this filter
+      // the search would have no effect.
+      const q = search ? search.trim().toLowerCase() : "";
+      const filteredGuests = q
+        ? guestsData.filter(g =>
+            g.name.toLowerCase().includes(q) ||
+            g.email.toLowerCase().includes(q)
+          )
+        : guestsData;
 
-      document.getElementById("g-total").textContent = String(guestsData.length);
+      const activeCount = filteredGuests.filter(g => g.isActive).length;
+      const totalRevenue = filteredGuests.reduce((sum, g) => sum + (g.totalSpent || 0), 0);
+
+      document.getElementById("g-total").textContent = String(filteredGuests.length);
       document.getElementById("g-active").textContent = String(activeCount);
       document.getElementById("g-revenue").textContent = `${totalRevenue.toLocaleString()} SAR`;
-      renderTable(guestsData);
+      renderTable(filteredGuests);
     } catch (err) {
       document.getElementById("guests-tbody").innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:#ef4444;font-weight:700;">${escapeHtml(err.message || "Failed to load guests data.")}</td></tr>`;
     }

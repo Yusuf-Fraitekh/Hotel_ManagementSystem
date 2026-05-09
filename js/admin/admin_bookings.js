@@ -37,11 +37,12 @@
   function renderStats() {
     const total = state.bookings.length;
     const today = new Date().toISOString().split('T')[0];
-    const checkedin = state.bookings.filter(b => b.checkin <= today && b.checkout > today).length;
-    const revenue = state.bookings.reduce((s, b) => s + (b.total || 0), 0);
+    const confirmed = state.bookings.filter(b => b.status !== 'cancelled').length;
+    const checkedin = state.bookings.filter(b => b.status !== 'cancelled' && b.checkin <= today && b.checkout > today).length;
+    const revenue = state.bookings.filter(b => b.status !== 'cancelled').reduce((s, b) => s + (b.total || 0), 0);
 
     setText('st-total',     total);
-    setText('st-confirmed', total);
+    setText('st-confirmed', confirmed);
     setText('st-checkedin', checkedin);
     setText('st-revenue',   revenue.toLocaleString() + ' SAR');
   }
@@ -51,10 +52,9 @@
     if (state.currentSearch) {
       const q = state.currentSearch.toLowerCase();
       res = res.filter(b =>
-        (b.id         && String(b.id).toLowerCase().includes(q)) ||
-        (b.roomName   && b.roomName.toLowerCase().includes(q))   ||
-        (b.userName   && b.userName.toLowerCase().includes(q))   ||
-        (b.userId     && String(b.userId).toLowerCase().includes(q))
+        (b.id       && String(b.id) === q)                   ||
+        (b.roomName && b.roomName.toLowerCase().includes(q)) ||
+        (b.userName && b.userName.toLowerCase().includes(q))
       );
     }
     state.filtered = res;
@@ -86,9 +86,19 @@
       const colorKey = displayName.charCodeAt(0) || 0;
       const avatarColor = avatarColors[colorKey % avatarColors.length];
 
-      const isActive = b.checkin <= today && b.checkout > today;
-      const statusClass = isActive ? 'checkedin' : 'confirmed';
-      const statusLabel = isActive ? 'Checked-In' : 'Confirmed';
+      const isCancelled = b.status === 'cancelled';
+      const isActive = !isCancelled && b.checkin <= today && b.checkout > today;
+      let statusClass, statusLabel;
+      if (isCancelled) {
+        statusClass = 'cancelled';
+        statusLabel = 'Cancelled';
+      } else if (isActive) {
+        statusClass = 'checkedin';
+        statusLabel = 'Checked-In';
+      } else {
+        statusClass = 'confirmed';
+        statusLabel = 'Confirmed';
+      }
 
       return `
         <tr>
