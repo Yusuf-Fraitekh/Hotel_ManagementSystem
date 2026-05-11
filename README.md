@@ -47,7 +47,7 @@ The backend follows **Clean Architecture** so that business rules stay independe
 - **`HotelManagement.Infrastructure`** — EF Core, SQL Server, concrete services, JWT wiring, and data access; implements **Application** interfaces and depends on **Domain** and **Application**.
 - **`HotelManagement.Api`** — HTTP API (controllers, DTOs, validation, middleware), static files, and composition root; references **Application** and **Infrastructure**.
 
-**Dependency rule:** inner layers never depend on outer layers. The UI in `pages/`, `js/`, and `css/` is a separate static front end that talks to the API over HTTP.
+**Dependency rule:** inner layers never depend on outer layers. The UI under **`frontend/`** (`pages/`, `js/`, `css/`) is a separate static front end that talks to the API over HTTP.
 
 ---
 
@@ -77,21 +77,18 @@ Optional: **Git** for cloning the repository.
 ## Getting started
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Yusuf-Fraitekh/Hotel_ManagementSystem.git
 cd Hotel_Mangment
 ```
-
-No separate `npm install` is required; the UI is plain static files.
-
 ---
 
 ## Configuration
 
-The API reads **`ConnectionStrings:DefaultConnection`** (see `HotelManagement.Infrastructure/DependencyInjection.cs`).
+The API reads **`ConnectionStrings:DefaultConnection`** (see `backend/src/HotelManagement.Infrastructure/DependencyInjection.cs`).
 
 ### Development (recommended)
 
-Edit **`src/HotelManagement.Api/appsettings.Development.json`** and set `ConnectionStrings:DefaultConnection` to your SQL Server instance, for example:
+Edit **`backend/src/HotelManagement.Api/appsettings.Development.json`** and set `ConnectionStrings:DefaultConnection` to your SQL Server instance, for example:
 
 - **SQL authentication**:
 
@@ -104,7 +101,7 @@ Edit **`src/HotelManagement.Api/appsettings.Development.json`** and set `Connect
 From the **repository root**:
 
 ```bash
-dotnet run --project src/HotelManagement.Api
+dotnet run --project backend/src/HotelManagement.Api
 ```
 
 By default (see `Properties/launchSettings.json`):
@@ -133,7 +130,7 @@ Press `Ctrl+C` in the terminal where `dotnet run` is executing.
 
 ### Entry point
 
-With the API running, open the root URL in a browser. The host serves the static site from the repo root; the default document is the **login / registration** page.
+With the API running, open the root URL in a browser. The host serves the static site from the **`frontend/`** folder; the default document is the **login / registration** page.
 
 ### Guest workflow
 
@@ -150,7 +147,7 @@ With the API running, open the root URL in a browser. The host serves the static
 
 ### Roles
 
-The system supports **`User`**, **`Staff`**, and **`Admin`** roles. Room and booking management APIs enforce policies (`RequireStaffOrAdmin`, `RequireAdmin`) according to controller attributes. New self-service registrations are typically **`User`**; create **Staff** users through your chosen operational process (e.g. SQL or future admin UI).
+The system supports **`User`**, and **`Admin`** roles. Room and booking management APIs enforce policies (`RequireAdmin`) according to controller attributes. New self-service registrations are typically **`User`**; create **Staff** users through your chosen operational process (e.g. SQL or future admin UI).
 
 ---
 
@@ -158,15 +155,17 @@ The system supports **`User`**, **`Staff`**, and **`Admin`** roles. Room and boo
 
 ```text
 Hotel_Mangment/
-├── src/
-│   ├── HotelManagement.Api/          # Web host, controllers, middleware, wwwroot (uploads)
-│   ├── HotelManagement.Application/  # Application contracts
-│   ├── HotelManagement.Domain/       # Entities, enums
-│   └── HotelManagement.Infrastructure/ # EF Core, services, DbSeeder, auth
-├── pages/                              # HTML pages (user, admin, auth)
-├── js/                                 # Shared and feature scripts
-├── css/                                # Stylesheets
-└── docs/                               # Additional design / flow notes (optional reading)
+├── backend/
+│   ├── HotelManagement.slnx           # Solution (open in Visual Studio / VS Code)
+│   └── src/
+│       ├── HotelManagement.Api/       # Web host, controllers, middleware, wwwroot (uploads)
+│       ├── HotelManagement.Application/
+│       ├── HotelManagement.Domain/
+│       └── HotelManagement.Infrastructure/
+└── frontend/
+    ├── pages/                         # HTML (user, admin, auth)
+    ├── js/                            # Scripts
+    └── css/                           # Stylesheets
 ```
 
 ---

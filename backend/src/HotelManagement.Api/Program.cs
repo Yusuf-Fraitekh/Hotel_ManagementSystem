@@ -42,7 +42,8 @@ app.UseCors("Frontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseStaticFiles();
-var frontendRoot = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", ".."));
+var repoRoot = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", "..", ".."));
+var frontendRoot = Path.Combine(repoRoot, "frontend");
 if (Directory.Exists(Path.Combine(frontendRoot, "pages")))
 {
     app.UseDefaultFiles(new DefaultFilesOptions
