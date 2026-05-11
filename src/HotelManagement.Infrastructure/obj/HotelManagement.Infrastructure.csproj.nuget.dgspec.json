@@ -1,7 +1,7 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\youse\\Desktop\\Hotel_Mangment\\src\\HotelManagement.Infrastructure\\HotelManagement.Infrastructure.csproj": {}
+    "c:\\Users\\youse\\Desktop\\Hotel_Mangment\\src\\HotelManagement.Infrastructure\\HotelManagement.Infrastructure.csproj": {}
   },
   "projects": {
     "C:\\Users\\youse\\Desktop\\Hotel_Mangment\\src\\HotelManagement.Application\\HotelManagement.Application.csproj": {
@@ -686,14 +686,14 @@
         }
       }
     },
-    "C:\\Users\\youse\\Desktop\\Hotel_Mangment\\src\\HotelManagement.Infrastructure\\HotelManagement.Infrastructure.csproj": {
+    "c:\\Users\\youse\\Desktop\\Hotel_Mangment\\src\\HotelManagement.Infrastructure\\HotelManagement.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\youse\\Desktop\\Hotel_Mangment\\src\\HotelManagement.Infrastructure\\HotelManagement.Infrastructure.csproj",
+        "projectUniqueName": "c:\\Users\\youse\\Desktop\\Hotel_Mangment\\src\\HotelManagement.Infrastructure\\HotelManagement.Infrastructure.csproj",
         "projectName": "HotelManagement.Infrastructure",
-        "projectPath": "C:\\Users\\youse\\Desktop\\Hotel_Mangment\\src\\HotelManagement.Infrastructure\\HotelManagement.Infrastructure.csproj",
+        "projectPath": "c:\\Users\\youse\\Desktop\\Hotel_Mangment\\src\\HotelManagement.Infrastructure\\HotelManagement.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\youse\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\youse\\Desktop\\Hotel_Mangment\\src\\HotelManagement.Infrastructure\\obj\\",
+        "outputPath": "c:\\Users\\youse\\Desktop\\Hotel_Mangment\\src\\HotelManagement.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

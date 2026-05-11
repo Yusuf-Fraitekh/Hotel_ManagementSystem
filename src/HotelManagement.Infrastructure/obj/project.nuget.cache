@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "AqLR4hTPhNo=",
+  "dgSpecHash": "4va1PklC+Og=",
   "success": true,
-  "projectFilePath": "C:\\Users\\youse\\Desktop\\Hotel_Mangment\\src\\HotelManagement.Infrastructure\\HotelManagement.Infrastructure.csproj",
+  "projectFilePath": "c:\\Users\\youse\\Desktop\\Hotel_Mangment\\src\\HotelManagement.Infrastructure\\HotelManagement.Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\youse\\.nuget\\packages\\azure.core\\1.47.1\\azure.core.1.47.1.nupkg.sha512",
     "C:\\Users\\youse\\.nuget\\packages\\azure.identity\\1.14.2\\azure.identity.1.14.2.nupkg.sha512",

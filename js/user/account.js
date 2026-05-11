@@ -164,19 +164,27 @@
       }
     });
 
-    logoutBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
-      try { await API.auth.logout(); } catch (_) { /* stateless — ignore */ }
+    function clearLocalExtras() {
+      const draftKey = window.QS_STORAGE?.KEYS?.bookingDraft;
+      if (draftKey) window.QS_STORAGE.remove(draftKey);
+    }
+
+    function performSignOut() {
+      void API.auth.logout().catch(() => {});
       API.clearSession();
+      clearLocalExtras();
       window.location.replace("index.html");
+    }
+
+    logoutBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      performSignOut();
     });
 
-    clearDataBtn.addEventListener("click", async (e) => {
+    clearDataBtn.addEventListener("click", (e) => {
       e.preventDefault();
       if (!confirm("Sign out and clear your local session?")) return;
-      try { await API.auth.logout(); } catch (_) { /* stateless — ignore */ }
-      API.clearSession();
-      window.location.replace("index.html");
+      performSignOut();
     });
   }
 
